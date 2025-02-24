@@ -1,36 +1,84 @@
 <script lang="ts" setup>
-const name = ref('')
+import { storeToRefs } from 'pinia'
+import { useField, useForm } from 'vee-validate'
 
 definePageMeta({
   layout: 'default',
 })
+
+const appStore = useAppStore()
+const router = useRouter()
+
+const { handleSubmit, meta, values } = useForm({
+  validationSchema: {
+    name(value: string) {
+      if (value?.length >= 3)
+        return true
+      return 'Imie i nazwisko jest wymagane'
+    },
+  },
+})
+
+const { userName, sessionId } = storeToRefs(appStore)
+const name = useField('name')
+
+const submit = handleSubmit((values) => {
+  console.log(values)
+
+  userName.value = values.name
+  sessionId.value = Math.random().toString(36).substring(7)
+  if (userName.value.length > 0) {
+    router.push('/')
+  }
+})
 </script>
 
 <template>
-  <div class="flex flex-1 flex-col justify-center items-center gap-3 p-8 font-sans! [&>*]:text-white!">
-    <w-card class="gap-3 p-4 bg-transparent! shadow-none! opacity-95">
-      <div class="text-xl mb-10 flex flex-col gap-8 items-center  ">
-        <Icon name="emojione-monotone:wedding" size="5em" />
-        <div class="flex flex-col gap-4 items-center tracking-widest! font-italic">
-          <div class="text-3xl">
+  <div class="flex flex flex-1 gap-3 p-4 font-sans!">
+    <div class="flex flex-1 flex-col items-center gap-4">
+      <v-spacer />
+
+      <div class="mb-10 flex flex-col gap-8 text-xl">
+        <div class="flex flex-col items-center justify-center gap-4 text-4xl font-600 tracking-wide!">
+          <div class="text-center text-4xl">
             Witamy na weselu
           </div>
-          <span class="text-pink-300 text-3xl font-bold">Klaudii</span>
-          <span>i</span>
-          <span class="text-blue-400 text-3xl font-bold">Sebastiana</span>
+          <span>Klaudii</span>
+          <span class="text-2xl">i</span>
+          <span>Sebastiana</span>
         </div>
-        <span class="self-start text-center">Tutaj mozesz wgrac, polubic lub przejzec zdjecia wgrane przez innych gosci </span>
       </div>
 
-      <div class="flex flex-1 flex-col gap-3 mb-15">
-        <span>Aby kontynuowac podaj swoja nazwe uzytkownika</span>
-        <w-text-input v-model="name" class="w-full bg-black/20 border-none" placeholder="Nazwa uzytkownika" />
-      </div>
-      <w-btn
-        label="Zaloguj"
-        class="outline-amber-800/20 outline-2 outline bg-black/20 active:bg-black/50 text-white"
-      />
-    </w-card>
+      <v-card
+        flat
+        width="400px"
+      >
+        <form @submit.prevent="() => submit()">
+          <v-card-text>
+            <v-text-field
+              v-model="name.value.value"
+              type="string"
+              autocomplete="name"
+
+              variant="solo-filled"
+              flat
+              block
+              placeholder="Wpisz swoje imie i nazwisko"
+            />
+          </v-card-text>
+          <v-card-actions>
+            <v-btn
+              text="Potwierdz obecnosc"
+              variant="tonal"
+              color="primary"
+              type="submit"
+              :disabled="!meta.dirty || !meta.valid"
+            />
+          </v-card-actions>
+        </form>
+      </v-card>
+      <v-spacer />
+    </div>
   </div>
 </template>
 

@@ -1,13 +1,31 @@
 <script setup lang="ts">
 const appStore = useAppStore()
-const { userName } = storeToRefs(appStore)
+const { userName, event } = storeToRefs(appStore)
+
+const userInitials = computed(() => {
+  const initials = userName.value.split(' ').map(n => n[0])
+  return `${initials.join('')}`
+})
 </script>
 
 <template>
   <v-app>
+    <v-app-bar
+      flat
+      class="px-3"
+    >
+      <v-app-bar-title>K i S</v-app-bar-title>
+
+      <v-spacer />
+      <v-chip>
+        {{ userInitials }}
+      </v-chip>
+    </v-app-bar>
     <v-main class="flex flex-col bg-gray-100">
+      {{ event }}
       <slot />
     </v-main>
+    <w-upload />
   </v-app>
 </template>
 

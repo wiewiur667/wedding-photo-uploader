@@ -1,9 +1,9 @@
 <script lang="ts" setup>
-
+const { data } = useFetch('/api/photos')
 </script>
 
 <template>
-  <div />
+  <div>{{ data }}</div>
 </template>
 
 <style>

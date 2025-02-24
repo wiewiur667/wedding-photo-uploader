@@ -11,7 +11,7 @@ import {
 export default defineConfig({
   theme: {
     fontFamily: {
-      sans: 'Aboreto',
+      sans: 'Assistant',
     },
   },
   presets: [

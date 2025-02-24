@@ -1,3 +1,7 @@
+<script setup lang="ts">
+
+</script>
+
 <template>
   <VitePwaManifest />
   <NuxtLayout>
@@ -5,15 +9,20 @@
   </NuxtLayout>
 </template>
 
-<style>
+<style lang="scss">
+html {
+  overflow-y: auto !important;
+}
 html,
 body,
 #__nuxt {
-  height: 100vh;
-  margin: 0;
-  padding: 0;
-  @apply text-gray-700;
-  @apply font-sans tracking-widest;
+  @apply h-dvh m-0 p-0;
+  @apply white;
+  @apply tracking-widest;
+
+  * {
+    @apply min-w-0;
+  }
 }
 
 html.dark {
