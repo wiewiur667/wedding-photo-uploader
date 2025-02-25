@@ -1,10 +1,11 @@
 import { groupBy } from 'lodash-es'
 import { DateTime } from 'luxon'
+import { db } from '../../db'
+import { comments, uploads } from '../../db/schema'
 
 export default defineEventHandler(async (event) => {
   const files = await readMultipartFormData(event) ?? []
   const storage = useStorage('fs')
-  const db = useDatabase()
 
   const groupedFiles = groupBy(files, f => f.name?.split('-')[0])
 
@@ -26,9 +27,24 @@ export default defineEventHandler(async (event) => {
 
     const fileLocation = `${fileURL}`
 
-    await db.sql`INSERT INTO files ("name", "filelocation", "mimetype", "size", "created_at", "created_by_name", "created_by_session") VALUES (${fileURL}, ${fileLocation}, ${processed.type}, ${processed.size}, ${Date.now()}, ${processed.creatorName}, ${processed.creatorSessionId})`
+    const uploadInsertResult = await db.insert(uploads).values({
+      location: fileLocation,
+      name: fileURL,
+      mime_type: processed.type,
+      size: processed.size,
+      created_at: Date.now(),
+      created_by_name: processed.creatorName,
+      created_by_session: processed.creatorSessionId,
+    }).run()
+
     if (processed.comment) {
-      await db.sql`INSERT INTO comments ("fk_Id", "comment", "created_at", "created_by_name", "created_by_session") VALUES ((SELECT id FROM files WHERE name = ${fileURL}), ${processed.comment}, ${Date.now()}, ${processed.creatorName}, ${processed.creatorSessionId})`
+      await db.insert(comments).values({
+        fk_upload_id: Number(uploadInsertResult.lastInsertRowid),
+        comment: processed.comment,
+        created_at: Date.now(),
+        created_by_name: processed.creatorName,
+        created_by_session: processed.creatorSessionId,
+      })
     }
   }
 

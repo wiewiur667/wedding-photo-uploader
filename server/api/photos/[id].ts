@@ -1,19 +1,20 @@
+import { eq } from 'drizzle-orm'
+import { db } from '~/db'
+import { uploads } from '~/db/schema'
+
 export default defineEventHandler(async (event) => {
   const storage = useStorage('fs')
-  const db = useDatabase()
   const id = getRouterParam(event, 'id')
-  const fileQuery = await db.sql`SELECT * FROM files WHERE id = ${id}`
+  const fileQuery = await db.select().from(uploads).where(eq(uploads.id, Number(id)))
 
-  const fileData: any = fileQuery?.rows?.at(0)
+  const fileData = fileQuery?.at(0)
 
   if (fileData) {
-    const location = fileData?.filelocation
+    const location = fileData?.location
     const file = await storage.getItemRaw(`${location}`)
 
-    console.log(fileData)
-
     event.node.res.setHeader('Content-Length', fileData.size)
-    event.node.res.setHeader('Content-Type', fileData.mimetype)
+    event.node.res.setHeader('Content-Type', fileData.mime_type)
     event.node.res.write(file)
 
     return

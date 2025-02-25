@@ -2,29 +2,50 @@
 const photosStore = usePhotosStore()
 const { topPhotos, topPhotosData } = storeToRefs(photosStore)
 
-const mappedPhotos = computed(() => {
+const mappedUploads = computed(() => {
   return topPhotosData.value.map((photo) => {
     return {
-      url: URL.createObjectURL(photo),
+      url: URL.createObjectURL(photo.data),
+      type: photo.type,
     }
   })
 })
 
-const carouselModel = ref(1)
+const carouselModel = ref(0)
 </script>
 
 <template>
   <div>
-    <v-carousel v-model:model-value="carouselModel">
+    <v-carousel
+      v-model:model-value="carouselModel"
+      continuous
+      cycle
+      interval="5000"
+    >
       <v-carousel-item
-        v-for="photo in mappedPhotos"
-        :key="photo.url"
+        v-for="upload in mappedUploads"
+        :key="upload.url"
       >
-        <v-img
-          :src="photo.url"
-          aspect-ratio="1"
-          class="rounded-lg"
-        />
+        <img
+          v-if="upload.type.startsWith('image')"
+          :src="upload.url"
+          class="m-auto block h-full max-w-full object-contain"
+        >
+        <video
+          v-else
+          controls
+          webkit-playsinline
+          playsinline
+          muted
+          autoplay
+          loop
+          class="m-auto block h-full max-w-full object-contain"
+        >
+          <source
+            :src="upload.url"
+            type="video/mp4"
+          >
+        </video>
       </v-carousel-item>
     </v-carousel>
   </div>
