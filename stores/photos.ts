@@ -5,11 +5,20 @@ export const usePhotosStore = defineStore('photos', () => {
   const { eventSource } = useServerEvents()
   const topPhotos = ref<ITopPhoto[]>([])
 
-  const topPhotosData = computedAsync<Blob[]>(async () => {
-    const result = []
+  const topPhotosData = computedAsync<{
+    type: string
+    data: Blob
+  }[]>(async () => {
+    const result: {
+      type: string
+      data: Blob
+    }[] = []
     for await (const photo of topPhotos.value) {
-      const response = await $fetch(`api/photos/${photo.id}`)
-      result.push(response)
+      const response = await $fetch<Blob>(`api/photos/${photo.id}`)
+      result.push({
+        type: photo.mimetype,
+        data: response,
+      })
     }
 
     return result

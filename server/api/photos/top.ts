@@ -1,14 +1,17 @@
+import { desc } from 'drizzle-orm'
+import { db } from '~/db'
+import { uploads } from '~/db/schema'
+
 export default defineEventHandler(async (event) => {
   const query = getQuery(event)
 
   const limit = Number.parseInt(query?.limit ?? '10')
 
-  const db = useDatabase()
-  const topPhotos = await db.sql`SELECT * FROM files ORDER BY created_at DESC LIMIT ${limit}`
-  const topPhotosData = topPhotos?.rows?.map(row => ({
+  const topPhotos = await db.select().from(uploads).orderBy(desc(uploads.created_at)).limit(limit)
+  const topPhotosData = topPhotos?.map(row => ({
     id: row.id,
-    filename: row.filename,
-    mimetype: row.mimetype,
+    filename: row.name,
+    mimetype: row.mime_type,
     size: row.size,
   }))
 
