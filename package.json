@@ -6,7 +6,6 @@
   "scripts": {
     "build": "nuxt generate",
     "dev": "nuxt dev",
-    "emulators": "firebase emulators:start",
     "generate": "nuxt generate",
     "postinstall": "nuxt prepare",
     "lint": "eslint .",
@@ -14,7 +13,6 @@
     "drizzle-kit": "drizzle-kit"
   },
   "dependencies": {
-    "@firebase/app-types": "^0.9.3",
     "@formkit/auto-animate": "^0.8.2",
     "@libsql/client": "^0.14.0",
     "@mdi/font": "^7.4.47",
@@ -24,9 +22,6 @@
     "dotenv": "^16.4.7",
     "drizzle-orm": "^0.39.3",
     "exifreader": "^4.26.1",
-    "firebase": "^11.3.0",
-    "firebase-admin": "^13.1.0",
-    "firebase-functions": "^6.3.1",
     "luxon": "^3.5.0",
     "nuxt-vuefire": "^1.0.5",
     "pinia-plugin-persistedstate": "^4.2.0",

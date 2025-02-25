@@ -106,20 +106,6 @@ export default defineNuxtConfig({
     },
   },
 
-  // vuefire: {
-  //   emulators: true,
-
-  //   config: {
-  //     apiKey: 'AIzaSyBlkgvlh-Kxg6rMwdnLCQ-dBdZeiLmrzGk',
-  //     authDomain: 'weddingphotouploader-76876.firebaseapp.com',
-  //     projectId: 'weddingphotouploader-76876',
-  //     storageBucket: 'weddingphotouploader-76876.firebasestorage.app',
-  //     messagingSenderId: '2144711657',
-  //     appId: '1:2144711657:web:72de261af993b81bc65178',
-  //     measurementId: 'G-JEL49E6ZJZ',
-  //   },
-  // },
-
   vuetify: {
     vuetifyOptions: {
       icons: {
