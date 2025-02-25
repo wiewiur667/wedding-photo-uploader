@@ -4,16 +4,13 @@ export const useAppStore = defineStore('app', () => {
   const userName = ref('')
   const sessionId = ref('')
   const event = ref('')
-  const eventSource = new EventSource('http://localhost:3000/sse')
-
-  eventSource.onmessage = (sse) => {
-    event.value = JSON.parse(sse.data)
-  }
+  const eventSource = new EventSource('/sse')
 
   return {
     userName,
     sessionId,
     event,
+    eventSource,
   }
 }, {
   persist: true,

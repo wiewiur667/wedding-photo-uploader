@@ -17,14 +17,14 @@ export default defineEventHandler(async (event) => {
   }))
 
   for (const processed of processedFiles) {
-    const fileName = processed.name ?? 'Test'
+    const fileName = processed.name
 
     const timestampedName = `${DateTime.now().toFormat('yyyy-MM-dd_HH-mm-ss')}-${fileName}`
 
-    const fileURL = `${processed.creatorSessionId}/${timestampedName}`
+    const fileURL = `${processed.creatorSessionId}:${timestampedName}`
     await storage.setItemRaw(fileURL, processed.data)
 
-    const fileLocation = `data:${fileURL}`
+    const fileLocation = `${fileURL}`
 
     await db.sql`INSERT INTO files ("name", "filelocation", "mimetype", "size", "created_at", "created_by_name", "created_by_session") VALUES (${fileURL}, ${fileLocation}, ${processed.type}, ${processed.size}, ${Date.now()}, ${processed.creatorName}, ${processed.creatorSessionId})`
     if (processed.comment) {

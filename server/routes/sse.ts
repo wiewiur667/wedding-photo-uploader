@@ -1,23 +1,16 @@
+import { debounce } from 'lodash-es'
+
 export default defineEventHandler(async (event) => {
   const eventStream = createEventStream(event)
   const storage = useStorage('fs')
-  const db = useDatabase()
-  storage.watch(async (change, key) => {
-    if (change === 'update') {
-      const topPhotos = await db.sql`SELECT * FROM files ORDER BY created_at DESC LIMIT 10`
-      // console.log(topPhotos)
 
-      await eventStream.push(JSON.stringify({
-        type: 'update',
-        topPhotos,
-      }))
-    }
-    else if (change === 'remove') {
-      await eventStream.push(JSON.stringify({
-        type: 'remove',
-        key,
-      }))
-    }
+  const handlePhotoUpdate = debounce(async () => await eventStream.push(JSON.stringify({
+    event: 'photos:update',
+  })), 1000)
+
+  storage.watch(async () => {
+    // if photos are added or removed, update the top photos
+    handlePhotoUpdate()
   })
 
   eventStream.onClosed(async () => {

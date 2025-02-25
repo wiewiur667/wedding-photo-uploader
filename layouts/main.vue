@@ -22,7 +22,6 @@ const userInitials = computed(() => {
       </v-chip>
     </v-app-bar>
     <v-main class="flex flex-col bg-gray-100">
-      EVENT: {{ event }}
       <slot />
     </v-main>
     <w-upload />

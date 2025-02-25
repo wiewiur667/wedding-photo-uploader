@@ -53,8 +53,8 @@
     {
       "previewLimit": 50,
       "driver": "SQLite",
-      "database": "${workspaceFolder:wedding-photo-uploader}/.data/db.sqlite3",
-      "name": "DB"
+      "name": "DB",
+      "database": "${workspaceFolder:vue-fire-test}/.data/db.sqlite3"
     }
   ]
 }
