@@ -1,7 +1,7 @@
 import { groupBy } from 'lodash-es'
 import { DateTime } from 'luxon'
-import { db } from '../../db'
-import { comments, uploads } from '../../db/schema'
+import { db } from '~/db'
+import { comments, uploads } from '~/db/schema'
 
 export default defineEventHandler(async (event) => {
   const files = await readMultipartFormData(event) ?? []

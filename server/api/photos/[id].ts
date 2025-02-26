@@ -13,11 +13,14 @@ export default defineEventHandler(async (event) => {
     const location = fileData?.location
     const file = await storage.getItemRaw(`${location}`)
 
-    event.node.res.setHeader('Content-Length', fileData.size)
-    event.node.res.setHeader('Content-Type', fileData.mime_type)
-    event.node.res.write(file)
+    console.log('found image', location)
 
-    return
+    setHeader(event, 'Content-Length', fileData.size)
+    setHeader(event, 'Content-Type', fileData.mime_type)
+
+    console.log('image sent')
+
+    return file
   }
 
   return sendError(event, {

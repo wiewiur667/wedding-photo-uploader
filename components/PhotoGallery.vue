@@ -1,4 +1,6 @@
 <script lang="ts" setup>
+import { VWindow } from 'vuetify/components'
+
 const photosStore = usePhotosStore()
 const { topPhotos, topPhotosData } = storeToRefs(photosStore)
 
@@ -12,24 +14,43 @@ const mappedUploads = computed(() => {
 })
 
 const carouselModel = ref(0)
+
+let interval: NodeJS.Timeout
+
+const windowRef = ref<VWindow>()
+onMounted(() => {
+  interval = setInterval(() => {
+    windowRef.value?.group.next()
+  }, 5000)
+})
+
+onUnmounted(() => {
+  clearInterval(interval)
+})
 </script>
 
 <template>
-  <div>
-    <v-carousel
-      v-model:model-value="carouselModel"
-      continuous
-      cycle
-      interval="5000"
+  <VWindow
+    ref="windowRef"
+    v-model:model-value="carouselModel"
+    class="h-full min-h-0 bg-green"
+    height="unset"
+    continuous
+    show-arrows="hover"
+    hide-delimiters
+  >
+    <v-window-item
+      v-for="upload in mappedUploads"
+      :key="upload.url"
+      class="flex flex-1 bg-amber max-h-dvh"
     >
-      <v-carousel-item
-        v-for="upload in mappedUploads"
-        :key="upload.url"
+      <v-card
+        class="flex-1 bg-black max-h-dvh flex! items-center! justify-center!"
       >
         <img
           v-if="upload.type.startsWith('image')"
           :src="upload.url"
-          class="m-auto block h-full max-w-full object-contain"
+          class="block min-h-0 flex-1 object-contain max-h-dvh"
         >
         <video
           v-else
@@ -39,16 +60,16 @@ const carouselModel = ref(0)
           muted
           autoplay
           loop
-          class="m-auto block h-full max-w-full object-contain"
+          class="block min-h-0 flex-1 max-h-dvh"
         >
           <source
             :src="upload.url"
             type="video/mp4"
           >
         </video>
-      </v-carousel-item>
-    </v-carousel>
-  </div>
+      </v-card>
+    </v-window-item>
+  </VWindow>
 </template>
 
 <style>

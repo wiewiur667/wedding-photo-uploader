@@ -1,7 +1,6 @@
 export default defineNuxtConfig({
   // Having SSR allows us to use `nuxt generate`, turn it off if you don't care
   modules: [
-    // 'nuxt-vuefire',
     '@vueuse/nuxt',
     '@unocss/nuxt',
     '@nuxtjs/color-mode',
@@ -16,7 +15,7 @@ export default defineNuxtConfig({
     'vuetify-nuxt-module',
   ],
 
-  // ssr: false,
+  ssr: false,
 
   devtools: { enabled: true },
 
@@ -46,20 +45,6 @@ export default defineNuxtConfig({
     classSuffix: '',
   },
 
-  // // since we are only using SSR for generation, we can only use a few of these rules effectively
-  // // https://nuxt.com/docs/guide/concepts/rendering#hybrid-rendering
-  // routeRules: {
-  //   '/': { ispr: true },
-  //   // Make some pages client only (since we have an SPA)
-  //   // useful for authenticated pages that require the user to be logged in to be
-  //   // displayed
-  //   '/admin': { ssr: false },
-  //   '/users': { ssr: false },
-  //   '/posts/new': { ssr: false },
-  //   '/emoji-panel': { ssr: false },
-  //   '/login': { ssr: false },
-  // },
-
   experimental: {
     payloadExtraction: false,
   },
@@ -68,15 +53,23 @@ export default defineNuxtConfig({
 
   nitro: {
     // NOTE: we don't want to use the firebase preset because this is a static website and the firebase preset is for SSR
+    // preset: 'node',
     storage: {
       fs: {
         driver: 'fs',
-        base: './data',
+        base: 'F:\\src\\vue-fire-test\\.data\\photos',
       },
     },
     experimental: {
       database: true,
-      tasks: true,
+    },
+    azure: {
+      config: {
+        // ...
+        platform: {
+          apiRuntime: 'node:20',
+        },
+      },
     },
   },
 
