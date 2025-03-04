@@ -1,77 +1,74 @@
 <script lang="ts" setup>
-import { VWindow } from 'vuetify/components'
+import {useDisplay} from 'vuetify'
 
-const photosStore = usePhotosStore()
-const { topPhotos, topPhotosData } = storeToRefs(photosStore)
+const {mobile, width} = useDisplay()
 
-const mappedUploads = computed(() => {
-  return topPhotosData.value.map((photo) => {
+const {getTopPhotos} = usePhotosStore()
+
+const mappedUploads = ref<{url: string, type: string, name: string}[]>([])
+
+
+onMounted(async ()=> {
+  mappedUploads.value = (await getTopPhotos()).map((photo) => {
     return {
       url: URL.createObjectURL(photo.data),
       type: photo.type,
+      name: photo.name
     }
   })
 })
 
-const carouselModel = ref(0)
+const minSquareSize = 150
 
-let interval: NodeJS.Timeout
+const columns = computed(()=> Math.floor(width.value / minSquareSize))
+// Return rows with columns of uploads
+function generateRows(items: any[] = mappedUploads.value) {
+  let index = 0
+  return Array.from({ length: Math.ceil(items.length / columns.value) }, () => {
+    return mappedUploads.value.slice(index, index += columns.value)
+  })
+}
 
-const windowRef = ref<VWindow>()
-onMounted(() => {
-  interval = setInterval(() => {
-    windowRef.value?.group.next()
-  }, 5000)
+async function loadMore({side, done}) {
+  mappedUploads.value = (await getTopPhotos()).map((photo) => {
+    return {
+      url: URL.createObjectURL(photo.data),
+      type: photo.type,
+      name: photo.name
+    }
+  })
+
+  done('ok')
+
+    // setTimeout(() => {
+    //   mappedUploads.value = [...[], ...mappedUploads.value]
+    //   generateRows(mappedUploads.value)
+    //   done('ok')
+    // }, 1000)
+  
+}
+
+const rows = computed(()=> {
+  return generateRows(mappedUploads.value)
 })
 
-onUnmounted(() => {
-  clearInterval(interval)
-})
 </script>
 
 <template>
-  <VWindow
-    ref="windowRef"
-    v-model:model-value="carouselModel"
-    class="h-full min-h-0 bg-green"
-    height="unset"
-    continuous
-    show-arrows="hover"
-    hide-delimiters
-  >
-    <v-window-item
-      v-for="upload in mappedUploads"
-      :key="upload.url"
-      class="flex flex-1 bg-amber max-h-dvh"
-    >
-      <v-card
-        class="flex-1 bg-black max-h-dvh flex! items-center! justify-center!"
-      >
-        <img
-          v-if="upload.type.startsWith('image')"
-          :src="upload.url"
-          class="block min-h-0 flex-1 object-contain max-h-dvh"
-        >
-        <video
-          v-else
-          controls
-          webkit-playsinline
-          playsinline
-          muted
-          autoplay
-          loop
-          class="block min-h-0 flex-1 max-h-dvh"
-        >
-          <source
-            :src="upload.url"
-            type="video/mp4"
-          >
-        </video>
-      </v-card>
-    </v-window-item>
-  </VWindow>
+  <v-infinite-scroll height="full" @load="loadMore" mode="manual">
+    <template v-for="row in rows">
+        <div class="gallery-grid">
+          <photo-gallery-upload-container v-for="upload in row" :key="upload.url" :upload="upload" />
+        </div>
+        </template>
+  </v-infinite-scroll>
 </template>
 
-<style>
-
+<style lang="scss">
+.gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(v-bind(columns), minmax(150px, 1fr));
+  grid-gap: 0.5rem;
+  margin-top: 0.5rem;
+}
 </style>

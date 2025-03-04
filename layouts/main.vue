@@ -6,6 +6,8 @@ const userInitials = computed(() => {
   const initials = userName.value.split(' ').map((n: string) => n[0])
   return `${initials.join('')}`
 })
+
+
 </script>
 
 <template>
@@ -15,7 +17,6 @@ const userInitials = computed(() => {
       class="px-3"
     >
       <v-app-bar-title>K i S</v-app-bar-title>
-
       <v-spacer />
       <v-chip>
         {{ userInitials }}
@@ -23,8 +24,10 @@ const userInitials = computed(() => {
     </v-app-bar>
     <v-main class="flex flex-col bg-gray-100">
       <slot />
+
     </v-main>
     <w-upload />
+    
   </v-app>
 </template>
 

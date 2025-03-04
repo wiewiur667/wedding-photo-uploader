@@ -1,5 +1,7 @@
+import path from 'node:path'
+import { fileURLToPath } from 'node:url'
+
 export default defineNuxtConfig({
-  // Having SSR allows us to use `nuxt generate`, turn it off if you don't care
   modules: [
     '@vueuse/nuxt',
     '@unocss/nuxt',
@@ -57,7 +59,7 @@ export default defineNuxtConfig({
     storage: {
       fs: {
         driver: 'fs',
-        base: 'F:\\src\\vue-fire-test\\.data\\photos',
+        base: path.resolve(path.dirname(fileURLToPath(import.meta.url)), '/.data/photos'),
       },
     },
     experimental: {

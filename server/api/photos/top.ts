@@ -5,7 +5,7 @@ import { uploads } from '~/db/schema'
 export default defineEventHandler(async (event) => {
   const query = getQuery(event)
 
-  const limit = Number.parseInt(query?.limit ?? '10')
+  const limit = Number.parseInt(query?.limit as string ?? '10')
 
   const topPhotos = await db.select().from(uploads).orderBy(desc(uploads.created_at)).limit(limit)
   const topPhotosData = topPhotos?.map(row => ({
