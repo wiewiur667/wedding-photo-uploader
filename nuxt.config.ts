@@ -7,10 +7,11 @@ export default defineNuxtConfig({
     '@unocss/nuxt',
     '@nuxtjs/color-mode',
     '@nuxt/eslint',
+    '@nuxt/fonts',
     '@nuxt/icon',
+    '@nuxt/image',
     '@formkit/auto-animate/nuxt',
     '@vite-pwa/nuxt',
-    '@nuxt/fonts',
     '@pinia/nuxt',
     'pinia-plugin-persistedstate/nuxt',
     '@vee-validate/nuxt',
@@ -59,7 +60,7 @@ export default defineNuxtConfig({
     storage: {
       fs: {
         driver: 'fs',
-        base: path.resolve(path.dirname(fileURLToPath(import.meta.url)), '/.data/photos'),
+        base: '.data/photos',
       },
     },
     experimental: {
@@ -91,6 +92,18 @@ export default defineNuxtConfig({
       standalone: false,
       nuxt: {
         sortConfigKeys: true,
+      },
+    },
+  },
+
+  image: {
+    presets: {
+      avatar: {
+        modifiers: {
+          format: 'jpg',
+          width: 300,
+          height: 300,
+        },
       },
     },
   },

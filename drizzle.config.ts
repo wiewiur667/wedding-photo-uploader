@@ -1,13 +1,11 @@
-import path from 'node:path'
-import { fileURLToPath } from 'node:url'
+import 'dotenv/config';
 import { defineConfig } from 'drizzle-kit'
 
-const base = path.resolve(path.dirname(fileURLToPath(import.meta.url)))
 export default defineConfig({
   dialect: 'sqlite',
-  schema: path.resolve(base, './db/schema.ts'),
+  schema: './db/schema.ts',
   dbCredentials: {
-    url: path.resolve(base, '.data/db.sqlite3'),
+    url: process.env.DB_FILE_NAME!,
   },
 
 })

@@ -8,11 +8,11 @@ export default defineEventHandler(async (event) => {
   const limit = Number.parseInt(query?.limit as string ?? '10')
 
   const topPhotos = await db.select().from(uploads).orderBy(desc(uploads.created_at)).limit(limit)
+
   const topPhotosData = topPhotos?.map(row => ({
     id: row.id,
-    filename: row.name,
+    name: row.name,
     mimetype: row.mime_type,
-    size: row.size,
   }))
 
   return topPhotosData

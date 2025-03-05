@@ -2,7 +2,7 @@ import { relations } from 'drizzle-orm'
 import { int, sqliteTable, text } from 'drizzle-orm/sqlite-core'
 
 export const uploads = sqliteTable('uploads', {
-  id: int().primaryKey({ autoIncrement: true }),
+  id: text().notNull(),
   name: text().notNull(),
   location: text().notNull(),
   mime_type: text().notNull(),
@@ -13,9 +13,18 @@ export const uploads = sqliteTable('uploads', {
 })
 
 export const comments = sqliteTable('comments', {
-  id: int().primaryKey({ autoIncrement: true }),
-  fk_upload_id: int().notNull(),
+  id: text().notNull(),
+  fk_upload_id: text().notNull(),
   comment: text().notNull(),
+  created_at: int().notNull(),
+  created_by_name: text().notNull(),
+  created_by_session: text().notNull(),
+})
+
+export const reactions = sqliteTable('reactions', {
+  id: text().notNull(),
+  fk_upload_id: text().notNull(),
+  reaction: text().notNull(),
   created_at: int().notNull(),
   created_by_name: text().notNull(),
   created_by_session: text().notNull(),
@@ -33,7 +42,7 @@ export const commentsRelations = relations(comments, ({ one }) => ({
 }))
 
 export const authorized = sqliteTable('authorized', {
-  id: int().primaryKey({ autoIncrement: true }),
+  id: text().notNull(),
   fk_upload_id: int().notNull(),
   by_session: text().notNull(),
   authorized_at: int().notNull(),

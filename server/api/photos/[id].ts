@@ -5,7 +5,7 @@ import { uploads } from '~/db/schema'
 export default defineEventHandler(async (event) => {
   const storage = useStorage('fs')
   const id = getRouterParam(event, 'id')
-  const fileQuery = await db.select().from(uploads).where(eq(uploads.id, Number(id)))
+  const fileQuery = await db.select().from(uploads).where(eq(uploads.id, `${id}`))
 
   const fileData = fileQuery?.at(0)
 

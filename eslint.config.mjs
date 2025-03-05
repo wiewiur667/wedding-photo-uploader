@@ -4,8 +4,7 @@ import withNuxt from './.nuxt/eslint.config.mjs'
 
 export default withNuxt(
   antfu({
-    // ...@antfu/eslint-config options
-    formatters: true,
+    //formatters: true,
     unocss: true,
     vue: {
       overrides: {
@@ -17,5 +16,4 @@ export default withNuxt(
       },
     },
   }),
-  // ...your other rules
 )

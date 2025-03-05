@@ -2,37 +2,23 @@ import type { ITopPhoto } from '~/code/interfaces/TopPhoto.interface'
 import { defineStore } from 'pinia'
 
 export const usePhotosStore = defineStore('photos', () => {
-  const { eventSource } = useServerEvents()
+  // const { eventSource } = useServerEvents()
   const topPhotos = ref<ITopPhoto[]>([])
 
-  const getTopPhotoIds = async () => {
-    const response = await $fetch<ITopPhoto[]>('api/photos/top', {
-      query: {
-        limit: 10,
-      },
-    })
-
-    topPhotos.value = response
-  }
-
-  async function getTopPhotos() {
-    console.log('getTopPhotos')
-    const result: {
+  async function getTopPhotos(limit: number = 10, offset: number = 0) {
+    const topPhotoData = await $fetch<{
+      id: number
       name: string
-      type: string
-      data: Blob
-    }[] = []
-    getTopPhotoIds()
-    for await (const photo of topPhotos.value) {
-      const response = await $fetch<Blob>(`api/photos/${photo.id}`)
-      result.push({
-        type: photo.mimetype,
-        data: response,
-        name: photo.filename,
-      })
-    }
+      mimetype: string
+    }[]>(`api/photos/top?limit=${limit}&offset=${offset}`)
 
-    return result
+    return topPhotoData.map((photo) => {
+      return {
+        id: photo.id,
+        type: photo.mimetype,
+        name: photo.name,
+      }
+    })
   }
 
   // eventSource.onmessage = async (sse) => {

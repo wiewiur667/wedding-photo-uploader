@@ -49,12 +49,5 @@
   ],
   "typescript.tsdk": "node_modules\\typescript\\lib",
   "sqltools.useNodeRuntime": true,
-  "sqltools.connections": [
-    {
-      "previewLimit": 50,
-      "driver": "SQLite",
-      "name": "DB",
-      "database": "${workspaceFolder:vue-fire-test}/.data/db.sqlite3"
-    }
-  ]
+  "sqltools.connections": []
 }

@@ -78,6 +78,7 @@ async function uploadFiles() {
 
     formData.append(`${index}-file`, f)
     formData.append(`${index}-meta`, JSON.stringify({
+      name: file.name,
       comment: file.comment,
       size: f.size,
       type: f.type,
@@ -216,7 +217,7 @@ async function uploadFiles() {
             <div>
               <v-text-field
                 v-model="resolvedFiles[carouselModel].name"
-                label="Nazwa pliku"
+                label="Nazwa"
                 variant="solo-filled"
                 color="primary"
                 flat
