@@ -1,8 +1,9 @@
+import { eq } from 'drizzle-orm'
 import { groupBy } from 'lodash-es'
 import { DateTime } from 'luxon'
 import { ulid } from 'ulid'
 import { db } from '~/db'
-import { comments, uploads } from '~/db/schema'
+import { comment, upload as uploadTable, user } from '~/db/schema'
 
 export default defineEventHandler(async (event) => {
   const files = await readMultipartFormData(event) ?? []
@@ -18,37 +19,49 @@ export default defineEventHandler(async (event) => {
     ...JSON.parse(group[1].data),
   }))
 
+  const sessionId = getHeader(event, 'Session-Id')
+
+  if (!sessionId) {
+    setResponseStatus(event, 400, 'Session-Id is required')
+    return
+  }
+
   try {
     for (const processed of processedFiles) {
       const fileName = processed.filename
 
       const timestampedName = `${DateTime.now().toFormat('yyyy-MM-dd_HH-mm-ss')}-${fileName}`
 
-      const fileURL = `${processed.creatorSessionId}:${timestampedName}`
+      const fileURL = `${sessionId}:${timestampedName}`
       await storage.setItemRaw(fileURL, processed.data)
 
       const fileLocation = `${fileURL}`
 
+      const userId = (await db.select().from(user).where(eq(user.session_id, sessionId)))[0]?.id
+
+      if (!userId) {
+        setResponseStatus(event, 401, 'Unauthorized')
+        return
+      }
+
       const uploadUlid = ulid()
-      await db.insert(uploads).values({
+      await db.insert(uploadTable).values({
         id: uploadUlid,
         location: fileLocation,
         name: processed.name,
         mime_type: processed.type,
         size: processed.size,
         created_at: Date.now(),
-        created_by_name: processed.creatorName,
-        created_by_session: processed.creatorSessionId,
+        fk_user_id: userId,
       }).run()
 
       if (processed.comment) {
-        await db.insert(comments).values({
+        await db.insert(comment).values({
           id: ulid(),
           fk_upload_id: uploadUlid,
           comment: processed.comment,
           created_at: Date.now(),
-          created_by_name: processed.creatorName,
-          created_by_session: processed.creatorSessionId,
+          fk_user_id: userId,
         })
       }
     }

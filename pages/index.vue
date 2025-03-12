@@ -5,7 +5,7 @@ definePageMeta({
 </script>
 
 <template>
-  <div class="flex flex-1 flex-col gap-3 p-3">
+  <div class="flex flex-1 flex-col px-1 py-1">
     <photo-gallery />
   </div>
 </template>

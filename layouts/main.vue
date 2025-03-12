@@ -1,20 +1,20 @@
 <script setup lang="ts">
 const appStore = useAppStore()
-const { userName, event } = storeToRefs(appStore)
+const { userName } = storeToRefs(appStore)
 
 const userInitials = computed(() => {
   const initials = userName.value.split(' ').map((n: string) => n[0])
   return `${initials.join('')}`
 })
-
-
 </script>
 
 <template>
   <v-app>
     <v-app-bar
       flat
-      class="px-3"
+      class="px-3 text-white"
+      color="transparent"
+      density="compact"
     >
       <v-app-bar-title>K i S</v-app-bar-title>
       <v-spacer />
@@ -22,12 +22,10 @@ const userInitials = computed(() => {
         {{ userInitials }}
       </v-chip>
     </v-app-bar>
-    <v-main class="flex flex-col bg-gray-100">
+    <v-main class="flex flex-col bg-slate-900">
       <slot />
-
     </v-main>
     <w-upload />
-    
   </v-app>
 </template>
 

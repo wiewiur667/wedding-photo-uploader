@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import { storeToRefs } from 'pinia'
+import { ulid } from 'ulid'
 import { useField, useForm } from 'vee-validate'
 
 definePageMeta({
@@ -9,75 +10,112 @@ definePageMeta({
 const appStore = useAppStore()
 const router = useRouter()
 
-const { handleSubmit, meta, values } = useForm({
+const routeCode = useRoute().query.code
+
+const { handleSubmit, meta } = useForm({
   validationSchema: {
     name(value: string) {
       if (value?.length >= 3)
         return true
-      return 'Imie i nazwisko jest wymagane'
+      return 'Imie i nazwisko jest wymagane (min. 3 znaki)'
+    },
+    code(value: string) {
+      if (value?.length >= 3)
+        return true
+      return 'Kod dostępu jest wymagany (min. 3 znaki)'
     },
   },
 })
 
 const { userName, sessionId } = storeToRefs(appStore)
 const name = useField('name')
+const code = useField('code')
 
-const submit = handleSubmit((values) => {
-  console.log(values)
+if (routeCode)
+  code.setValue(routeCode)
 
+const submit = handleSubmit(async (values) => {
   userName.value = values.name
-  sessionId.value = Math.random().toString(36).substring(7)
+  sessionId.value = ulid()
   if (userName.value.length > 0) {
-    router.push('/')
+    try {
+      await useApi('/api/user/register', {
+        body: {
+          name: userName.value,
+        },
+      })
+
+      router.push('/')
+    }
+    catch (error) {
+      console.error(error)
+    }
   }
 })
 </script>
 
 <template>
-  <div class="flex flex flex-1 gap-3 p-4 font-sans!">
-    <div class="flex flex-1 flex-col items-center gap-4">
+  <div class="flex flex flex-1 gap-3 bg-gray-700 font-sans!">
+    <div class="flex flex-1 flex-col gap-4">
       <v-spacer />
-
-      <div class="mb-10 flex flex-col gap-8 text-xl">
-        <div class="flex flex-col items-center justify-center gap-4 text-4xl font-600 tracking-wide!">
-          <div class="text-center text-4xl">
+      <div class="flex flex-col gap-8 text-xl">
+        <div class="flex flex-col items-center justify-center gap-2 text-3xl text-white">
+          <div>
             Witamy na weselu
           </div>
-          <span>Klaudii</span>
-          <span class="text-2xl">i</span>
-          <span>Sebastiana</span>
+          <span class="font-bold">Klaudii i Sebastiana</span>
         </div>
       </div>
-
+      <v-spacer />
       <v-card
         flat
-        width="400px"
+        class="w-full rounded-t-lg bg-white/50!"
       >
         <form @submit.prevent="() => submit()">
-          <v-card-text>
+          <v-card-text class="px-6!">
+            <div class="mb-8 text-lg" />
             <v-text-field
               v-model="name.value.value"
               type="string"
               autocomplete="name"
-
-              variant="solo-filled"
+              label="Imię i nazwisko"
+              variant="solo"
+              density="comfortable"
+              prepend-icon="mdi:account"
               flat
               block
-              placeholder="Wpisz swoje imie i nazwisko"
+              placeholder="Podaj swoje imię i nazwisko"
+              :error="name.meta.dirty && !meta.valid"
+              :error-messages="name.errors.value"
+            />
+            <v-text-field
+              v-model="code.value.value"
+              type="number"
+              variant="solo"
+              density="comfortable"
+              pattern="\d*"
+              prepend-icon="mdi:lock"
+              flat
+              block
+              :disabled="!!routeCode"
+              :error="code.meta.dirty && !meta.valid"
+              :error-messages="code.errors.value"
+              placeholder="Podaj kod dostępu"
+              label="Kod dostępu"
             />
           </v-card-text>
-          <v-card-actions>
+          <v-card-actions class="m-3 flex justify-end">
             <v-btn
-              text="Potwierdz obecnosc"
-              variant="tonal"
+              text="Wejdź"
+              variant="flat"
               color="primary"
               type="submit"
+              class="px-8"
               :disabled="!meta.dirty || !meta.valid"
             />
           </v-card-actions>
         </form>
       </v-card>
-      <v-spacer />
     </div>
   </div>
 </template>

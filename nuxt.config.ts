@@ -1,6 +1,3 @@
-import path from 'node:path'
-import { fileURLToPath } from 'node:url'
-
 export default defineNuxtConfig({
   modules: [
     '@vueuse/nuxt',
@@ -47,6 +44,10 @@ export default defineNuxtConfig({
   colorMode: {
     classSuffix: '',
   },
+  devServer: {
+    host: '192.168.1.195',
+    port: 3000,
+  },
 
   experimental: {
     payloadExtraction: false,
@@ -60,7 +61,7 @@ export default defineNuxtConfig({
     storage: {
       fs: {
         driver: 'fs',
-        base: '.data/photos',
+        base: process.env.PHOTOS_DIR,
       },
     },
     experimental: {
@@ -95,7 +96,6 @@ export default defineNuxtConfig({
       },
     },
   },
-
   image: {
     presets: {
       avatar: {

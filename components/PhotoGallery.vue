@@ -1,12 +1,10 @@
 <script lang="ts" setup>
 import { useDisplay } from 'vuetify'
 
-const { width } = useDisplay()
-
 const photoStore = usePhotosStore()
 const { topPhotos } = storeToRefs(photoStore)
 
-await callOnce(async () => topPhotos.value = await photoStore.getTopPhotos(10, 0))
+await callOnce(async () => topPhotos.value = await photoStore.getTopPhotos(10, 0) ?? [])
 
 const mappedPhotos = ref<any[]>([])
 mappedPhotos.value = mapPhotos(topPhotos.value)
@@ -16,80 +14,77 @@ function mapPhotos(photos: any[]) {
     type: photo.type,
     name: photo.name,
     id: photo.id,
+    reactionsCount: photo.reactionsCount ?? 0,
+    commentsCount: photo.commentsCount ?? 0,
+    reacted: photo.reacted,
   }))
 }
 
-const minSquareSize = 150
+const columns = 3
 
-const columns = computed(() => Math.floor(width.value / minSquareSize))
-
-// Return rows with columns of uploads
-function generateRows(items: any[] = mappedPhotos.value) {
-  let index = 0
-  return Array.from({ length: Math.ceil(items.length / columns.value) }, () => {
-    return mappedPhotos.value.slice(index, index += columns.value)
-  })
-}
-
-async function loadMore({ side, done }) {
-  topPhotos.value = await photoStore.getTopPhotos(10, mappedPhotos.value.length)
+async function loadMore({ done }: { side: any, done: (param: 'ok' | 'empty') => void }) {
+  topPhotos.value = await photoStore.getTopPhotos(10, mappedPhotos.value.length) ?? []
   mappedPhotos.value = mapPhotos(topPhotos.value)
-  done('ok')
+  done(topPhotos.value.length > mappedPhotos.value.length ? 'ok' : 'empty')
 }
 
-const rows = computed(() => {
-  return generateRows(mappedPhotos.value)
-})
+const previewDialogOpen = ref(false)
+const previewDialogIndex = ref(0)
 
-const previewModel = ref({
-  visible: false,
-  target: null,
-})
+function previewUpload(index: number) {
+  previewDialogIndex.value = index
+  previewDialogOpen.value = true
+}
 
-function previewUpload(upload: any) {
-  previewModel.value = {
-    visible: true,
-    target: upload,
-  }
+async function likeUpload(upload: any) {
+  const photo = mappedPhotos.value.find(photo => photo.id === upload.id)
+  const reaction = photo.reacted ? 'dislike' : 'like'
+
+  const { count, reacted } = await useApi(`/api/photo/${upload.id}/reaction?reaction=${reaction}`, {
+    method: 'POST',
+  })
+  photo.reactionsCount = count
+  photo.reacted = !!reacted
 }
 </script>
 
 <template>
-  <v-infinite-scroll
-    height="full"
-    mode="manual"
+  <v-data-iterator
+    :items="mappedPhotos"
     @load="loadMore"
   >
-    <template
-      v-for="row in rows"
-      :key="row"
-    >
-      <div class="gallery-grid">
-        <photo-gallery-upload-item
-          v-for="upload in row"
-          :key="upload.url"
-          :upload="upload"
-          @open="previewUpload(upload)"
-        />
+    <template #default="{ items: uploads }">
+      <div class="gallery-grid text-white!">
+        <template
+          v-for="(upload, index) in uploads"
+          :key="upload.raw.id"
+        >
+          <photo-gallery-item
+            :upload="upload.raw"
+            @open="() => previewUpload(index)"
+            @like="() => likeUpload(upload.raw)"
+          />
+        </template>
       </div>
+      <v-dialog
+        v-model="previewDialogOpen"
+        fullscreen
+      >
+        <photo-preview-dialog
+          :index="previewDialogIndex"
+          :uploads="uploads.map(upload => upload.raw)"
+          @close="previewDialogOpen = false"
+        />
+      </v-dialog>
     </template>
-  </v-infinite-scroll>
-  {{ previewModel }}
-  <v-dialog
-    v-model="previewModel.visible"
-  >
-    <photo-preview-dialog
-      :target="previewModel.target"
-      fullscreen
-    />
-  </v-dialog>
+  </v-data-iterator>
 </template>
 
 <style lang="scss">
 .gallery-grid {
   display: grid;
-  grid-template-columns: repeat(v-bind(columns), minmax(150px, 1fr));
+  grid-template-columns: repeat(v-bind(columns), minmax(60px, 1fr));
   grid-gap: 0.5rem;
-  margin-top: 0.5rem;
+  margin: 0.5rem;
 }
 </style>

@@ -1,11 +1,11 @@
 import { eq } from 'drizzle-orm'
 import { db } from '~/db'
-import { uploads } from '~/db/schema'
+import { upload } from '~/db/schema'
 
 export default defineEventHandler(async (event) => {
   const storage = useStorage('fs')
   const id = getRouterParam(event, 'id')
-  const fileQuery = await db.select().from(uploads).where(eq(uploads.id, `${id}`))
+  const fileQuery = await db.select().from(upload).where(eq(upload.id, `${id}`))
 
   const fileData = fileQuery?.at(0)
 
@@ -13,12 +13,8 @@ export default defineEventHandler(async (event) => {
     const location = fileData?.location
     const file = await storage.getItemRaw(`${location}`)
 
-    console.log('found image', location)
-
     setHeader(event, 'Content-Length', fileData.size)
     setHeader(event, 'Content-Type', fileData.mime_type)
-
-    console.log('image sent')
 
     return file
   }

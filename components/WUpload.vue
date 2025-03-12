@@ -3,7 +3,6 @@ import { useFileDialog } from '@vueuse/core'
 import ExifReader from 'exifreader'
 
 const dialogVisibleModel = ref(false)
-const { userName, sessionId } = storeToRefs(useAppStore())
 
 const { open, onChange, onCancel } = useFileDialog({
   accept: 'image/jpeg,image/heic,image/heif,video/*', // Set to accept only image files
@@ -83,14 +82,11 @@ async function uploadFiles() {
       size: f.size,
       type: f.type,
       lastModified: f.lastModified,
-      creatorName: userName.value,
-      creatorSessionId: sessionId.value,
     }))
   })
   try {
     uploading.value = true
-    await $fetch('/api/upload', {
-      method: 'POST',
+    await useApi('/api/upload', {
       body: formData,
     })
 
@@ -202,7 +198,7 @@ async function uploadFiles() {
                 variant="flat"
                 color="primary"
                 class="flex-1"
-                @click.stop="() => removeFile(index)"
+                @click.stop="() => removeFile(carouselModel)"
               >
                 <div class="flex items-center justify-center gap-3">
                   Usun zdjecie

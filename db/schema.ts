@@ -1,43 +1,47 @@
 import { relations } from 'drizzle-orm'
 import { int, sqliteTable, text } from 'drizzle-orm/sqlite-core'
 
-export const uploads = sqliteTable('uploads', {
+export const upload = sqliteTable('upload', {
   id: text().notNull(),
   name: text().notNull(),
   location: text().notNull(),
   mime_type: text().notNull(),
   size: int().notNull(),
   created_at: int().notNull(),
-  created_by_name: text().notNull(),
-  created_by_session: text().notNull(),
+  fk_user_id: text().notNull(),
 })
 
-export const comments = sqliteTable('comments', {
+export const user = sqliteTable('user', {
+  id: text().notNull(),
+  name: text().notNull(),
+  session_id: text().notNull(),
+  created_at: int().notNull(),
+})
+
+export const comment = sqliteTable('comment', {
   id: text().notNull(),
   fk_upload_id: text().notNull(),
   comment: text().notNull(),
   created_at: int().notNull(),
-  created_by_name: text().notNull(),
-  created_by_session: text().notNull(),
+  fk_user_id: text().notNull(),
 })
 
-export const reactions = sqliteTable('reactions', {
+export const reaction = sqliteTable('reaction', {
   id: text().notNull(),
   fk_upload_id: text().notNull(),
   reaction: text().notNull(),
   created_at: int().notNull(),
-  created_by_name: text().notNull(),
-  created_by_session: text().notNull(),
+  fk_user_id: text().notNull(),
 })
 
-export const uploadsRelations = relations(uploads, ({ many }) => ({
-  comments: many(comments),
+export const uploadsRelations = relations(upload, ({ many }) => ({
+  comments: many(comment),
 }))
 
-export const commentsRelations = relations(comments, ({ one }) => ({
-  upload: one(uploads, {
-    fields: [comments.fk_upload_id],
-    references: [uploads.id],
+export const commentsRelations = relations(comment, ({ one }) => ({
+  upload: one(upload, {
+    fields: [comment.fk_upload_id],
+    references: [upload.id],
   }),
 }))
 
@@ -49,8 +53,8 @@ export const authorized = sqliteTable('authorized', {
 })
 
 export const authorizedRelations = relations(authorized, ({ one }) => ({
-  upload: one(uploads, {
+  upload: one(upload, {
     fields: [authorized.fk_upload_id],
-    references: [uploads.id],
+    references: [upload.id],
   }),
 }))
