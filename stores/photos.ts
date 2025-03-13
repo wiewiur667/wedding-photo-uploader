@@ -15,7 +15,7 @@ export const usePhotosStore = defineStore('photos', () => {
         commentsCount: number
         reactionsCount: number
         reacted: boolean
-        byName: string
+        userName: string
         timestamp: number
       }[]>(`api/photo/top?limit=${limit}&offset=${offset}`) ?? []
 
@@ -27,7 +27,7 @@ export const usePhotosStore = defineStore('photos', () => {
           commentsCount: photo.commentsCount,
           reactionsCount: photo.reactionsCount,
           reacted: photo.reacted,
-          byName: photo.byName,
+          byName: photo.userName,
           timestamp: photo.timestamp,
         }
       })

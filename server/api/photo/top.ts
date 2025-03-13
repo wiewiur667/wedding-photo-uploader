@@ -37,10 +37,12 @@ export default defineEventHandler(async (event) => {
         reactionsCount: count(reaction.id),
         reacted: exists(reacted),
         timestamp: upload.created_at,
+        userName: userTable.name,
       })
       .from(upload)
       .leftJoin(comment, eq(comment.fk_upload_id, upload.id))
       .leftJoin(reaction, eq(reaction.fk_upload_id, upload.id))
+      .leftJoin(userTable, eq(userTable.id, upload.fk_user_id))
       .groupBy(upload.id)
       .orderBy(desc(upload.created_at))
       .limit(limit)
@@ -52,7 +54,7 @@ export default defineEventHandler(async (event) => {
       commentsCount: row.commentsCount ?? 0,
       reactionsCount: row.reactionsCount ?? 0,
       reacted: !!row.reacted,
-      byName: user.name,
+      userName: row.userName,
       timestamp: row.timestamp,
     }))
 

@@ -1,5 +1,5 @@
 import { count, desc, eq, getTableColumns } from 'drizzle-orm'
-import { db, withOffset } from '~/db'
+import { db } from '~/db'
 import { comment, user } from '~/db/schema'
 
 export default defineEventHandler(async (event) => {
@@ -35,7 +35,7 @@ export default defineEventHandler(async (event) => {
     .offset(offsetVal)
 
   return {
-    result: commentsQuery,
+    rows: commentsQuery,
     total: commentsCountQuery[0].count,
     limit: limitVal,
     offset: offsetVal,
