@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+import { DateTime } from 'luxon'
 
 const photoStore = usePhotosStore()
 const { topPhotos } = storeToRefs(photoStore)
@@ -18,6 +19,8 @@ function mapPhotos(photos: any[]) {
     reactionsCount: photo.reactionsCount ?? 0,
     commentsCount: photo.commentsCount ?? 0,
     reacted: photo.reacted,
+    byName: photo.byName,
+    timestamp: DateTime.fromMillis(photo.timestamp),
   }))
 }
 

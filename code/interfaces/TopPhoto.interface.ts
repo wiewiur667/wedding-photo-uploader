@@ -5,4 +5,5 @@ export interface ITopPhoto {
   commentsCount: number
   reactionsCount: number
   reacted: boolean
+  byName: string
 }

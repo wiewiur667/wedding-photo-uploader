@@ -12,9 +12,9 @@ export default defineEventHandler(async (event) => {
     return
   }
 
-  const userId = (await db.select().from(userTable).where(eq(userTable.session_id, sessionId)))[0]?.id
+  const user = (await db.select().from(userTable).where(eq(userTable.session_id, sessionId)))[0]
 
-  if (!userId) {
+  if (!user) {
     setResponseStatus(event, 401, 'Unauthorized')
     return
   }
@@ -25,7 +25,7 @@ export default defineEventHandler(async (event) => {
       .from(reaction)
       .where(and(eq(reaction.fk_upload_id, upload.id), eq(
         reaction.fk_user_id,
-        userId,
+        user.id,
       )))
       .as('reacted')
     const topPhotos = await db
@@ -36,6 +36,7 @@ export default defineEventHandler(async (event) => {
         commentsCount: count(comment.id),
         reactionsCount: count(reaction.id),
         reacted: exists(reacted),
+        timestamp: upload.created_at,
       })
       .from(upload)
       .leftJoin(comment, eq(comment.fk_upload_id, upload.id))
@@ -51,6 +52,8 @@ export default defineEventHandler(async (event) => {
       commentsCount: row.commentsCount ?? 0,
       reactionsCount: row.reactionsCount ?? 0,
       reacted: !!row.reacted,
+      byName: user.name,
+      timestamp: row.timestamp,
     }))
 
     return topPhotosData
