@@ -9,28 +9,35 @@ export default defineEventHandler(async (event) => {
   const offsetVal = Number(offset) ?? 0
   const limitVal = Number(limit) ?? 10
 
-  const commentsQuery = await withOffset(
-    db
-      .select({
-        ...getTableColumns(comment),
-        user_id: user.id,
-        user_name: user.name,
-        count: count(),
-      })
-      .from(comment)
-      .leftJoin(user, eq(comment.fk_user_id, user.id))
-      .where(eq(comment.fk_upload_id, `${id}`))
-      .$dynamic(),
-    desc(comment.created_at),
-    offsetVal,
-    limitVal,
-  )
+  if (!id) {
+    setResponseStatus(event, 400, 'id is required')
+    return
+  }
+
+  const commentsCountQuery = await
+  db
+    .select({ count: count() })
+    .from(comment)
+    .where(eq(comment.fk_upload_id, id?.toString()))
+
+  const commentsQuery = await
+  db
+    .select({
+      ...getTableColumns(comment),
+      user_id: user.id,
+      user_name: user.name,
+    })
+    .from(comment)
+    .leftJoin(user, eq(comment.fk_user_id, user.id))
+    .where(eq(comment.fk_upload_id, id?.toString()))
+    .orderBy(desc(comment.created_at))
+    .limit(limitVal)
+    .offset(offsetVal)
 
   return {
-    offset: offsetVal,
+    result: commentsQuery,
+    total: commentsCountQuery[0].count,
     limit: limitVal,
-    total: commentsQuery[0].count,
-    rows: commentsQuery,
-
+    offset: offsetVal,
   }
 })
