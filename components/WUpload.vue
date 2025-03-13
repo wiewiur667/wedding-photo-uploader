@@ -2,6 +2,8 @@
 import { useFileDialog } from '@vueuse/core'
 import ExifReader from 'exifreader'
 
+
+const {mdAndDown} = useDisplay()
 const dialogVisibleModel = ref(false)
 
 const { open, onChange, onCancel } = useFileDialog({
@@ -108,7 +110,8 @@ async function uploadFiles() {
     v-model="dialogVisibleModel"
     scrollable
     persistent
-    fullscreen
+    :fullscreen="mdAndDown"
+    max-width="800px"
   >
     <template #activator>
       <v-fab
@@ -146,12 +149,12 @@ async function uploadFiles() {
           <span>Wybierz zdjecia</span>
           <v-spacer />
           <v-btn
-            variant="tonal"
-            color="secondary"
-            size="x-small"
-            icon="mdi:close"
+            variant="flat"
+            color="error"
+            density="compact"
+            icon
             @click="isActive.value = false"
-          />
+          ><Icon name="mdi:close"/></v-btn>
         </v-card-title>
         <v-card-text>
           <div
@@ -169,7 +172,7 @@ async function uploadFiles() {
                 <v-sheet class="h-full w-full flex-col gap-3 flex!">
                   <div
                     v-if="file.src"
-                    class="min-h-0 flex-1"
+                    class="min-h-0 flex-1 bg-black"
                   >
                     <img
                       v-if="file.type.startsWith('image')"
@@ -193,14 +196,13 @@ async function uploadFiles() {
                 </v-sheet>
               </v-carousel-item>
             </v-carousel>
-            <div class="flex flex items-center gap-3">
+            <div class="flex items-center justify-center gap-3">
               <v-btn
                 variant="flat"
                 color="primary"
-                class="flex-1"
                 @click.stop="() => removeFile(carouselModel)"
               >
-                <div class="flex items-center justify-center gap-3">
+                <div class="flex items-center space-between gap-3">
                   Usun zdjecie
                   <Icon
                     name="mdi:close"
@@ -208,7 +210,7 @@ async function uploadFiles() {
                   />
                 </div>
               </v-btn>
-              <span>{{ carouselModel + 1 }} / {{ resolvedFiles.length }}</span>
+              <span class="">{{ carouselModel + 1 }} / {{ resolvedFiles.length }}</span>
             </div>
             <div>
               <v-text-field

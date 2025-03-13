@@ -1,8 +1,9 @@
 <script lang="ts" setup>
-import { useDisplay } from 'vuetify'
 
 const photoStore = usePhotosStore()
 const { topPhotos } = storeToRefs(photoStore)
+
+const {mdAndDown} = useDisplay()
 
 await callOnce(async () => topPhotos.value = await photoStore.getTopPhotos(10, 0) ?? [])
 

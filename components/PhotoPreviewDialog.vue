@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import { DateTime } from 'luxon'
+import { defaultDateFormat } from '~/code/utils'
 
 interface Props {
   uploads: any[]
@@ -31,6 +32,11 @@ async function saveComment() {
   commentText.value = ''
   refresh()
 }
+
+async function loadMoreComments() {
+
+}
+
 </script>
 
 <template>
@@ -54,17 +60,17 @@ async function saveComment() {
       </div>
       <v-spacer />
       <div
-        v-if="commentsData?.at(0)"
+        v-if="commentsData?.rows?.at(0)"
         class="flex items-center justify-center gap-3 text-xs font-thin text-slate-300!"
       >
-        <span class="overflow-clip">{{ commentsData.at(0)!.comment }}</span>
+        <span class="overflow-clip">{{ commentsData.rows?.at(0)!.comment }}</span>
         <v-spacer />
         <div
           v-show="status === 'success'"
           class="flex flex-col items-end"
         >
-          <span>{{ DateTime.fromMillis(commentsData.at(0)!.created_at).toFormat('dd/MM/yyyy hh:mm:ss') }}</span>
-          <span>{{ commentsData.at(0)!.user_name }}</span>
+          <span>{{ DateTime.fromMillis(commentsData.rows?.at(0)!.created_at).toFormat(defaultDateFormat) }}</span>
+          <span>{{ commentsData.rows?.at(0)!.user_name }}</span>
         </div>
         <v-chip @click="commentsVisible = true">
           <Icon name="mdi:comment" />
@@ -78,42 +84,42 @@ async function saveComment() {
     >
   </v-card>
   <v-bottom-sheet v-model="commentsVisible">
-    <v-card>
-      <v-card-text>
+    <div class="bg-white py-1 flex flex-col gap-3">
         <v-data-iterator
           v-if="status === 'success'"
-          :items="commentsData ?? []"
+          :items="commentsData?.rows ?? []"
         >
           <template #default="{ items: comments }">
             <div
               v-for="comment in comments"
               :key="comment.raw.id"
-              class="flex items-center justify-center gap-3 text-xs font-thin text-slate-900!"
+              class="flex items-center justify-center gap-3 text-xs font-thin text-slate-900! border-b p-1 px-3"
             >
-              <span class="overflow-clip">{{ comment.raw!.comment }}</span>
-              <v-spacer />
+              <span class="overflow-clip flex-1">{{ comment.raw!.comment }}</span>
               <div
                 v-show="status === 'success'"
                 class="flex flex-col items-end"
               >
-                <span>{{ DateTime.fromMillis(comment.raw!.created_at).toFormat('dd/MM/yyyy hh:mm:ss') }}</span>
+                <span>{{ DateTime.fromMillis(comment.raw!.created_at).toFormat(defaultDateFormat) }}</span>
                 <span>{{ comment.raw!.user_name }}</span>
               </div>
             </div>
           </template>
         </v-data-iterator>
-      </v-card-text>
-      <v-card-actions>
+      <div class="flex items-center gap-3 p-1 px-3">
         <v-text-field
           v-model="commentText"
           density="compact"
-          label="Komentarz"
+          placeholder="Komentarz"
+          variant="solo-filled"
+          hide-details
+          flat
         />
-        <v-btn @click="() => saveComment()">
+        <v-btn @click="() => saveComment()" variant="flat" color="primary">
           Wyslij
         </v-btn>
-      </v-card-actions>
-    </v-card>
+      </div>
+    </div>
   </v-bottom-sheet>
 </template>
 

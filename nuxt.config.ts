@@ -44,10 +44,10 @@ export default defineNuxtConfig({
   colorMode: {
     classSuffix: '',
   },
-  devServer: {
-    host: '192.168.1.195',
-    port: 3000,
-  },
+  // devServer: {
+  //   host: '192.168.1.195',
+  //   port: 3000,
+  // },
 
   experimental: {
     payloadExtraction: false,
@@ -57,7 +57,6 @@ export default defineNuxtConfig({
 
   nitro: {
     // NOTE: we don't want to use the firebase preset because this is a static website and the firebase preset is for SSR
-    // preset: 'node',
     storage: {
       fs: {
         driver: 'fs',
@@ -66,14 +65,6 @@ export default defineNuxtConfig({
     },
     experimental: {
       database: true,
-    },
-    azure: {
-      config: {
-        // ...
-        platform: {
-          apiRuntime: 'node:20',
-        },
-      },
     },
   },
 
