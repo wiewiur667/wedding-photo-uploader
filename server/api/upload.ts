@@ -3,7 +3,7 @@ import { groupBy } from 'lodash-es'
 import { DateTime } from 'luxon'
 import { ulid } from 'ulid'
 import { db } from '~/db'
-import { comment, upload as uploadTable, user } from '~/db/schema'
+import { comment, upload as uploadTable, user as userTable } from '~/db/schema'
 
 export default defineEventHandler(async (event) => {
   const files = await readMultipartFormData(event) ?? []
@@ -26,6 +26,13 @@ export default defineEventHandler(async (event) => {
     return
   }
 
+  const userId = (await db.select().from(userTable).where(eq(userTable.session_id, sessionId)))[0]?.id
+
+  if (!userId) {
+    setResponseStatus(event, 401, 'Unauthorized')
+    return
+  }
+
   try {
     for (const processed of processedFiles) {
       const fileName = processed.filename
@@ -36,13 +43,6 @@ export default defineEventHandler(async (event) => {
       await storage.setItemRaw(fileURL, processed.data)
 
       const fileLocation = `${fileURL}`
-
-      const userId = (await db.select().from(user).where(eq(user.session_id, sessionId)))[0]?.id
-
-      if (!userId) {
-        setResponseStatus(event, 401, 'Unauthorized')
-        return
-      }
 
       const uploadUlid = ulid()
       await db.insert(uploadTable).values({

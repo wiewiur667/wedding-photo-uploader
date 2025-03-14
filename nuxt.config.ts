@@ -1,6 +1,8 @@
 import process from 'node:process'
+import 'dotenv/config'
 
 export default defineNuxtConfig({
+
   modules: [
     '@vueuse/nuxt',
     '@unocss/nuxt',
@@ -46,6 +48,10 @@ export default defineNuxtConfig({
   colorMode: {
     classSuffix: '',
   },
+  runtimeConfig: {
+    userCode: process.env.USER_CODE,
+    adminCode: process.env.ADMIN_CODE,
+  },
   // devServer: {
   //   host: '192.168.1.195',
   //   port: 3000,
@@ -69,17 +75,6 @@ export default defineNuxtConfig({
       database: true,
     },
   },
-
-  // hooks: {
-  //   close: (nuxt) => {
-  //     // FIXME: workaround for https://github.com/nuxt/cli/issues/193
-  //     if (!nuxt.options._prepare) {
-  //       setTimeout(() => {
-  //         process.exit(0)
-  //       }, 500)
-  //     }
-  //   },
-  // },
 
   eslint: {
     config: {

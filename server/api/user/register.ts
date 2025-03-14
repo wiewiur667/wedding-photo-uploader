@@ -1,18 +1,26 @@
-import { sql } from 'drizzle-orm'
+import { eq, sql } from 'drizzle-orm'
 import { ulid } from 'ulid'
 import { db } from '~/db'
-import { user } from '~/db/schema'
+import { user as userTable } from '~/db/schema'
 
 export default defineEventHandler(async (event) => {
-  const { name } = await readBody(event)
-  const sessionId = getHeader(event, 'Session-Id')
+  const { name, code } = await readBody(event)
 
-  if (!name || !sessionId) {
+  const runtimeConfig = useRuntimeConfig()
+
+  const { userCode, adminCode } = runtimeConfig
+
+  if (code !== userCode && code !== adminCode) {
+    setResponseStatus(event, 401, 'Invalid code')
+    return
+  }
+
+  if (!name || !code) {
     setResponseStatus(event, 400, 'Name and Session-Id are required')
     return
   }
 
-  const existingUser = await db.select().from(user).where(sql`lower(name) = lower(${name})`)
+  const existingUser = await db.select().from(userTable).where(sql`lower(name) = lower(${name})`)
 
   if (existingUser.length) {
     setResponseStatus(event, 409, 'User already exists')
@@ -20,13 +28,18 @@ export default defineEventHandler(async (event) => {
   }
 
   try {
-    await db.insert(user).values({
-      id: ulid(),
-      session_id: sessionId,
+    const id = ulid()
+    await db.insert(userTable).values({
+      id,
+      session_id: ulid(),
       name,
       created_at: Date.now(),
+      is_admin: code === adminCode,
     })
-    return true
+
+    const user = (await db.select().from(userTable).where(eq(userTable.id, id)))[0]
+
+    return user
   }
   catch (error) {
     console.error(error)

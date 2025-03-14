@@ -16,6 +16,7 @@ export const user = sqliteTable('user', {
   name: text().notNull(),
   session_id: text().notNull(),
   created_at: int().notNull(),
+  is_admin: int().notNull().$type<boolean>(),
 })
 
 export const comment = sqliteTable('comment', {
