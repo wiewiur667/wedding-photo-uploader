@@ -5,14 +5,14 @@ export const useAppStore = defineStore('app', () => {
   const sessionId = ref('')
   const userId = ref('')
   const event = ref('')
-  const eventSource = new EventSource('/sse')
+  // const eventSource = new EventSource('/sse')
 
   return {
     userId,
     userName,
     sessionId,
     event,
-    eventSource,
+    // eventSource,
   }
 }, {
   persist: true,

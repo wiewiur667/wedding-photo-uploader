@@ -21,7 +21,16 @@ export default defineEventHandler(async (event) => {
     return
   }
 
-  if (reaction === 'like') {
+  const reacted = await db
+    .$count(reactionTable,
+      and(
+      eq(reactionTable.fk_upload_id, id),
+      eq(reactionTable.fk_user_id, userId),
+    ))
+
+  
+
+  if (reaction === 'like' && reacted === 0) {
     try {
       await db.insert(reactionTable).values({
         id: ulid(),
@@ -51,17 +60,6 @@ export default defineEventHandler(async (event) => {
       setResponseStatus(event, 500)
     }
   }
-  const hasReacted = db
-    .select()
-    .from(reactionTable)
-    .where(and(
-      eq(reactionTable.fk_upload_id, id),
-      eq(reactionTable.fk_user_id, userId),
-    ))
-    .as('reacted')
-  const reactions = await db
-    .select({ count: count(), reacted: exists(hasReacted) })
-    .from(reactionTable)
-    .where(eq(reactionTable.fk_upload_id, id))
-  return reactions[0]
+
+  return true
 })

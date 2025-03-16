@@ -1,0 +1,35 @@
+{
+  "trocheTuPusto": "Trochę tu pusto, bądź pierwszy i dodaj coś nowego!",
+  "skomentuj": "Skomentuj",
+  "komentarz": "Komentarz | Komentarze",
+  "validation": {
+    "comment": {
+      "isRequired": "Komentarz nie może być pusty"
+    }
+  },
+  "reactions": {
+    "likes": "Polubienia | Polubień"
+  },
+  "action": {
+    "download": "Pobierz",
+    "like": "Polub",
+    "upload": "Wgraj",
+    "result": {
+      "successfullyUploaded": "Pomyślnie wgrano zdjęcia"
+    },
+    "close": "Zamknij",
+    "removePhoto": "Usuń zdjecie"
+  },
+  "timeAgo": {
+    "day": "Dzień | Dni",
+    "hour": "Godzinę | Godziny | Godzin",
+    "minute": "Minutę | Minut",
+    "second": "Sekundę | Sekund",
+    "week": "Tydzień | Tygodni",
+    "month": "Miesiąc | Miesięcy",
+    "year": "Rok | Lat"
+
+  },
+  "choosePhotos": "Wybierz zdjęcia",
+  "noThumbnail": "Brak miniatury"
+}

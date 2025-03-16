@@ -1,8 +1,8 @@
 <script lang="ts" setup>
+import { FetchError } from 'ofetch'
 import { storeToRefs } from 'pinia'
 import { ulid } from 'ulid'
 import { useField, useForm } from 'vee-validate'
-import {FetchError} from 'ofetch'
 
 definePageMeta({
   layout: 'default',
@@ -13,7 +13,7 @@ const router = useRouter()
 
 const routeCode = useRoute().query.code
 
-const { handleSubmit, meta, setErrors: setFormErrors} = useForm({
+const { handleSubmit, meta } = useForm({
   validationSchema: {
     name(value: string) {
       if (value?.length >= 3)
@@ -36,10 +36,9 @@ if (routeCode)
   code.setValue(routeCode)
 
 const submit = handleSubmit(async (values) => {
-  
   if (values.name.length > 0) {
     try {
-      const user = await $fetch('/api/user/register', {
+      const user = await $fetch('/api/users/register', {
         method: 'POST',
         body: {
           name: values.name,
@@ -47,27 +46,26 @@ const submit = handleSubmit(async (values) => {
         },
       })
 
-      console.log(user)
-
-      userName.value = user?.name
-      sessionId.value = user?.session_id
-      isAdmin.value = user?.is_admin
-      userId.value = user?.id
-
-
-
-      router.push('/')
+      if (user) {
+        userName.value = user.name
+        sessionId.value = user.session_id
+        isAdmin.value = user.is_admin
+        userId.value = user.id
+        router.push('/')
+      }
     }
     catch (error) {
-      if(error instanceof FetchError) {
-        if(error.statusCode === 409) {
+      if (error instanceof FetchError) {
+        if (error.statusCode === 409) {
           name.setErrors(['Użytkownik o podanej nazwie już istnieje'])
           return
         }
-        if(error.statusCode === 401) {
+        if (error.statusCode === 401) {
           code.setErrors('Nieprawidłowy kod dostępu')
-          return
         }
+      }
+      else {
+        console.error(error)
       }
     }
   }

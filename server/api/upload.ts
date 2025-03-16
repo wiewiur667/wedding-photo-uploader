@@ -15,6 +15,7 @@ export default defineEventHandler(async (event) => {
     type: group[0].type,
     size: group[0].size,
     data: group[0].data,
+    thumbnail: group[2]?.data,
     filename: group[0].name,
     ...JSON.parse(group[1].data),
   }))
@@ -40,7 +41,9 @@ export default defineEventHandler(async (event) => {
       const timestampedName = `${DateTime.now().toFormat('yyyy-MM-dd_HH-mm-ss')}-${fileName}`
 
       const fileURL = `${sessionId}:${timestampedName}`
+      const thumbnailURL = `${sessionId}:thumbnail-${timestampedName}`
       await storage.setItemRaw(fileURL, processed.data)
+      await storage.setItemRaw(thumbnailURL, processed.thumbnail)
 
       const fileLocation = `${fileURL}`
 

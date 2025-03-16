@@ -1,6 +1,6 @@
 <script setup lang="ts">
-const appStore = useAppStore()
-const { userName } = storeToRefs(appStore)
+const userStore = useUserStore()
+const { userName, isAdmin } = storeToRefs(userStore)
 
 const userInitials = computed(() => {
   const initials = userName.value.split(' ').map((n: string) => n[0])
@@ -18,7 +18,13 @@ const userInitials = computed(() => {
     >
       <v-app-bar-title>K i S</v-app-bar-title>
       <v-spacer />
-      <v-chip>
+      <Icon 
+        name="mdi:crown" 
+        v-if="isAdmin" 
+        class="text-yellow-500"
+        title="Admin"
+      />
+      <v-chip class="ml-2">
         {{ userInitials }}
       </v-chip>
     </v-app-bar>

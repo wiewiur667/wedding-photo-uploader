@@ -11,6 +11,7 @@ export default defineNuxtConfig({
     '@nuxt/fonts',
     '@nuxt/icon',
     '@nuxt/image',
+    '@nuxtjs/i18n',
     '@formkit/auto-animate/nuxt',
     '@vite-pwa/nuxt',
     '@pinia/nuxt',
@@ -52,10 +53,10 @@ export default defineNuxtConfig({
     userCode: process.env.USER_CODE,
     adminCode: process.env.ADMIN_CODE,
   },
-  // devServer: {
-  //   host: '192.168.1.195',
-  //   port: 3000,
-  // },
+  devServer: {
+    host: '192.168.1.195',
+    port: 3000,
+  },
 
   experimental: {
     payloadExtraction: false,
@@ -64,24 +65,14 @@ export default defineNuxtConfig({
   compatibilityDate: '2025-02-06',
 
   nitro: {
-    // NOTE: we don't want to use the firebase preset because this is a static website and the firebase preset is for SSR
     storage: {
       fs: {
         driver: 'fs',
-        base: process.env.PHOTOS_DIR,
+        base: process.env.UPLOADS_DIR,
       },
     },
     experimental: {
       database: true,
-    },
-  },
-
-  eslint: {
-    config: {
-      standalone: false,
-      nuxt: {
-        sortConfigKeys: true,
-      },
     },
   },
   image: {
@@ -108,5 +99,9 @@ export default defineNuxtConfig({
         defaultSet: 'custom',
       },
     },
+  },
+
+  i18n: {
+    vueI18n: './i18n.config.ts', // if you are using custom path, default
   },
 })

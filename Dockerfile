@@ -9,7 +9,7 @@ RUN corepack enable
 COPY ./package.json ./pnpm-lock.yaml .npmrc ./
 
 ENV DB_FILE_NAME=file:./.data/db.sqlite3
-ENV PHOTOS_DIR=.data/photos
+ENV UPLOADS_DIR=.data/uploads
 
 # Install dependencies
 RUN pnpm i

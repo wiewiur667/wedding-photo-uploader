@@ -1,13 +1,13 @@
 <script lang="ts" setup>
 import { useFileDialog } from '@vueuse/core'
 import ExifReader from 'exifreader'
+import { generateThumbnail } from '~/code/utils'
 
-
-const {mdAndDown} = useDisplay()
+const { mdAndDown } = useDisplay()
 const dialogVisibleModel = ref(false)
 
 const { open, onChange, onCancel } = useFileDialog({
-  accept: 'image/jpeg,image/heic,image/heif,video/*', // Set to accept only image files
+  accept: 'image/jpeg,image/heic,image/heif', // Set to accept only image files
 })
 
 interface ImageData {
@@ -74,7 +74,7 @@ const resultSnackbarVisible = ref(false)
 
 async function uploadFiles() {
   const formData = new FormData()
-  resolvedFiles.value.forEach((file, index) => {
+  resolvedFiles.value.forEach(async (file, index) => {
     const f = file.fileData
 
     formData.append(`${index}-file`, f)
@@ -85,10 +85,13 @@ async function uploadFiles() {
       type: f.type,
       lastModified: f.lastModified,
     }))
+
+    const thumbnail = await generateThumbnail(f, 400, 400)
+    formData.append(`${index}-thumbnail`, thumbnail!)
   })
   try {
     uploading.value = true
-    await useApi('/api/upload', {
+    await $api('/api/upload', {
       body: formData,
     })
 
@@ -116,7 +119,7 @@ async function uploadFiles() {
     <template #activator>
       <v-fab
         app
-        text="Wgraj"
+        :text="$t('action.upload')"
         icon="mdi:camera"
         color="primary"
         variant="flat"
@@ -129,24 +132,23 @@ async function uploadFiles() {
         color="success"
         timeout="2000"
         rounded
-        text="Pomyslnie wgrano zdjecia"
+        :text="$t('action.result.successfullyUploaded')"
       >
         <template #actions>
           <v-btn
             variant="text"
+            :text="$t('action.close')"
             @click="resultSnackbarVisible = false"
-          >
-            Zamknij
-          </v-btn>
+          />
         </template>
       </v-snackbar>
     </template>
     <template #default="{ isActive }">
       <v-card
-        class="flex flex-1 flex-col gap-5 bg-white p-3"
+        class="flex flex-1 flex-col bg-white p-3"
       >
         <v-card-title class="items-center gap-3 flex!">
-          <span>Wybierz zdjecia</span>
+          <span>{{ $t('choosePhotos') }}</span>
           <v-spacer />
           <v-btn
             variant="flat"
@@ -154,7 +156,9 @@ async function uploadFiles() {
             density="compact"
             icon
             @click="isActive.value = false"
-          ><Icon name="mdi:close"/></v-btn>
+          >
+            <Icon name="mdi:close" />
+          </v-btn>
         </v-card-title>
         <v-card-text>
           <div
@@ -192,7 +196,7 @@ async function uploadFiles() {
                       >
                     </video>
                   </div>
-                  <span v-else>Brak miniatury</span>
+                  <span v-else>{{ $t('noThumbnail') }}</span>
                 </v-sheet>
               </v-carousel-item>
             </v-carousel>
@@ -200,16 +204,11 @@ async function uploadFiles() {
               <v-btn
                 variant="flat"
                 color="primary"
+                density="comfortable"
+                :text="$t('action.removePhoto')"
+                append-icon="mdi-close"
                 @click.stop="() => removeFile(carouselModel)"
-              >
-                <div class="flex items-center space-between gap-3">
-                  Usun zdjecie
-                  <Icon
-                    name="mdi:close"
-                    class="text-white"
-                  />
-                </div>
-              </v-btn>
+              />
               <span class="">{{ carouselModel + 1 }} / {{ resolvedFiles.length }}</span>
             </div>
             <div>
@@ -242,15 +241,6 @@ async function uploadFiles() {
           </div>
         </v-card-text>
         <v-card-actions>
-          <v-btn
-            color="primary"
-            @click="() => {
-              resolvedFiles = []
-              open()
-            }"
-          >
-            Od poczatku
-          </v-btn>
           <v-spacer />
           <v-btn
             v-if="!!resolvedFiles.length"

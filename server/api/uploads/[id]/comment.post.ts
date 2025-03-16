@@ -6,31 +6,35 @@ import { db } from '~/db'
 import { comment as commentTable, user as userTable } from '~/db/schema'
 
 export default defineEventHandler(async (event) => {
-  const id = getRouterParam(event, 'id')
+  const uploadId = getRouterParam(event, 'id')
   const sessionId = getHeader(event, 'Session-Id')
   const { comment } = await readBody(event)
 
-  if (!id || !comment || !sessionId) {
+  if (!uploadId || !comment || !sessionId) {
     setResponseStatus(event, 400, 'id, comment, and Session-Id are required')
     return
   }
 
-  const userId = (await db.select().from(userTable).where(eq(userTable.session_id, sessionId)))[0]?.id
+  const user = (await db.select().from(userTable).where(eq(userTable.session_id, sessionId)))[0]
 
-  if (!userId) {
+  if (!user.id) {
     setResponseStatus(event, 401, 'Unauthorized')
     return
   }
 
   try {
+    const id = ulid()
     await db.insert(commentTable).values({
-      id: ulid(),
-      fk_upload_id: id!,
+      id,
+      fk_upload_id: uploadId!,
       comment,
       created_at: Date.now(),
-      fk_user_id: userId,
+      fk_user_id: user.id,
     })
-    return true
+
+    const newComment = (await db.select().from(commentTable).where(eq(commentTable.id, id)))[0]
+
+    return newComment
   }
   catch (error) {
     console.error(error)

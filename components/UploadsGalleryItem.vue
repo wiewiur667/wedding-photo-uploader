@@ -1,4 +1,6 @@
 <script lang="ts" setup>
+import { vPress } from '~/code/utils'
+
 interface Props {
   upload: {
     id: string
@@ -11,38 +13,19 @@ interface Props {
 }
 defineProps<Props>()
 
-const emit = defineEmits(['open', 'like'])
-
-const vPress = {
-  mounted: (el: HTMLElement) => {
-    let pressTimer: NodeJS.Timeout
-    let pressCounter = 0
-    el.addEventListener('mousedown', () => {
-      pressCounter++
-      if (pressCounter === 1) {
-        pressTimer = setTimeout(() => {
-          emit('open')
-          clearTimeout(pressTimer)
-          pressCounter = 0
-        }, 250)
-      }
-      if (pressCounter === 2) {
-        pressCounter = 0
-        emit('like')
-        clearTimeout(pressTimer)
-      }
-    })
-  },
-}
+defineEmits(['open', 'react'])
 </script>
 
 <template>
   <div
-    v-press
+    v-press="{
+      click: () => $emit('open'),
+      dblclick: () => $emit('react'),
+    }"
     class="square relative touch-manipulation overflow-hidden"
   >
     <img
-      :src="`/api/photo/${upload.id}`"
+      :src="`/api/uploads/${upload.id}`"
       class="content h-full object-cover object-center"
       :alt="upload.name"
     >

@@ -1,14 +1,14 @@
 <script lang="ts" setup>
 import { VWindow } from 'vuetify/components'
 
-const photosStore = usePhotosStore()
-const { _topPhotos, topPhotosData } = storeToRefs(photosStore)
+const uploadsStore = useUploadsStore()
+const { topUploadsData } = storeToRefs(uploadsStore)
 
 const mappedUploads = computed(() => {
-  return topPhotosData.value.map((photo) => {
+  return topUploadsData.value.map((upload) => {
     return {
-      url: URL.createObjectURL(photo.data),
-      type: photo.type,
+      url: URL.createObjectURL(upload.data),
+      type: upload.type,
     }
   })
 })

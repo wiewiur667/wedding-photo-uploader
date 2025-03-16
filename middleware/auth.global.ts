@@ -5,7 +5,7 @@ export default defineNuxtRouteMiddleware(async (to) => {
     return
 
   try {
-    const user = await useApi('/api/user')
+    const user = await $api('/api/users', { method: 'GET' })
 
     if (user) {
       userId.value = user.id
