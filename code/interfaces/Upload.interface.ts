@@ -9,4 +9,5 @@ export interface IUpload {
   createdAt: DateTime
   reacted: boolean
   byName: string
+  approvedForGallery: boolean
 }

@@ -5,6 +5,7 @@ export const upload = sqliteTable('upload', {
   id: text().notNull(),
   name: text().notNull(),
   location: text().notNull(),
+  thumbnail: text().notNull(),
   mime_type: text().notNull(),
   size: int().notNull(),
   created_at: int().notNull(),
@@ -14,7 +15,6 @@ export const upload = sqliteTable('upload', {
 export const user = sqliteTable('user', {
   id: text().notNull(),
   name: text().notNull(),
-  session_id: text().notNull(),
   created_at: int().notNull(),
   is_admin: int().notNull().$type<boolean>(),
 })
@@ -35,6 +35,20 @@ export const reaction = sqliteTable('reaction', {
   fk_user_id: text().notNull(),
 })
 
+export const galleryApproval = sqliteTable('gallery_approval', {
+  id: text().notNull(),
+  fk_upload_id: text().notNull(),
+  approved: int().notNull().$type<boolean>(),
+  approved_at: int().notNull(),
+  fk_user_id: text().notNull(),
+})
+export const galleryApprovalRelations = relations(galleryApproval, ({ one }) => ({
+  upload: one(upload, {
+    fields: [galleryApproval.fk_upload_id],
+    references: [upload.id],
+  }),
+}))
+
 export const uploadsRelations = relations(upload, ({ many }) => ({
   comments: many(comment),
 }))
@@ -49,7 +63,7 @@ export const commentsRelations = relations(comment, ({ one }) => ({
 export const authorized = sqliteTable('authorized', {
   id: text().notNull(),
   fk_upload_id: int().notNull(),
-  by_session: text().notNull(),
+  fk_user_id: text().notNull(),
   authorized_at: int().notNull(),
 })
 

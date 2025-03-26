@@ -18,7 +18,14 @@
       "successfullyUploaded": "Pomyślnie wgrano zdjęcia"
     },
     "close": "Zamknij",
-    "removePhoto": "Usuń zdjecie"
+    "removePhoto": "Usuń zdjecie",
+    "enter": "Wejdź",
+    "enter_passcode": "Podaj kod",
+    "delete": "Usun",
+    "acceptForGallery": "Zaakceptuj",
+    "confirm": "Potwierdz",
+    "cancel": "Anuluj",
+    "back": "Wroc"
   },
   "timeAgo": {
     "day": "Dzień | Dni",
@@ -28,8 +35,11 @@
     "week": "Tydzień | Tygodni",
     "month": "Miesiąc | Miesięcy",
     "year": "Rok | Lat"
-
   },
   "choosePhotos": "Wybierz zdjęcia",
-  "noThumbnail": "Brak miniatury"
+  "noThumbnail": "Brak miniatury",
+  "acceptForGallery": {
+    "title": "Zatwierdz zdjecie",
+    "confirmation": "Zatwierdz zdjecie do bycia wyswietlonym w galerii"
+  }
 }

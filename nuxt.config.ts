@@ -18,6 +18,7 @@ export default defineNuxtConfig({
     'pinia-plugin-persistedstate/nuxt',
     '@vee-validate/nuxt',
     'vuetify-nuxt-module',
+    'nuxt-auth-utils',
   ],
 
   ssr: false,
@@ -25,6 +26,8 @@ export default defineNuxtConfig({
   devtools: { enabled: true },
 
   app: {
+    pageTransition: { name: 'page', mode: 'out-in' },
+    layoutTransition: { name: 'layout', mode: 'out-in' },
     head: {
       viewport: 'width=device-width,initial-scale=1',
       link: [
@@ -46,6 +49,12 @@ export default defineNuxtConfig({
     '@unocss/reset/tailwind.css',
   ],
 
+  eslint: {
+    config: {
+      standalone: false, // <---
+    },
+  },
+
   colorMode: {
     classSuffix: '',
   },
@@ -53,14 +62,10 @@ export default defineNuxtConfig({
     userCode: process.env.USER_CODE,
     adminCode: process.env.ADMIN_CODE,
   },
-  devServer: {
-    host: '192.168.1.195',
-    port: 3000,
-  },
-
-  experimental: {
-    payloadExtraction: false,
-  },
+  // devServer: {
+  //   host: '192.168.1.195',
+  //   port: 3000,
+  // },
 
   compatibilityDate: '2025-02-06',
 

@@ -6,6 +6,9 @@ import { db } from '~/db'
 import { comment, upload as uploadTable, user as userTable } from '~/db/schema'
 
 export default defineEventHandler(async (event) => {
+  const session = await requireUserSession(event)
+  const { user } = session
+
   const files = await readMultipartFormData(event) ?? []
   const storage = useStorage('fs')
 
@@ -16,20 +19,11 @@ export default defineEventHandler(async (event) => {
     size: group[0].size,
     data: group[0].data,
     thumbnail: group[2]?.data,
-    filename: group[0].name,
+    filename: group[0].filename,
     ...JSON.parse(group[1].data),
   }))
 
-  const sessionId = getHeader(event, 'Session-Id')
-
-  if (!sessionId) {
-    setResponseStatus(event, 400, 'Session-Id is required')
-    return
-  }
-
-  const userId = (await db.select().from(userTable).where(eq(userTable.session_id, sessionId)))[0]?.id
-
-  if (!userId) {
+  if (!user) {
     setResponseStatus(event, 401, 'Unauthorized')
     return
   }
@@ -40,8 +34,8 @@ export default defineEventHandler(async (event) => {
 
       const timestampedName = `${DateTime.now().toFormat('yyyy-MM-dd_HH-mm-ss')}-${fileName}`
 
-      const fileURL = `${sessionId}:${timestampedName}`
-      const thumbnailURL = `${sessionId}:thumbnail-${timestampedName}`
+      const fileURL = `${user.id}:${timestampedName}`
+      const thumbnailURL = `${user.id}:thumbnail-${timestampedName}`
       await storage.setItemRaw(fileURL, processed.data)
       await storage.setItemRaw(thumbnailURL, processed.thumbnail)
 
@@ -51,11 +45,12 @@ export default defineEventHandler(async (event) => {
       await db.insert(uploadTable).values({
         id: uploadUlid,
         location: fileLocation,
+        thumbnail: thumbnailURL,
         name: processed.name,
         mime_type: processed.type,
         size: processed.size,
         created_at: Date.now(),
-        fk_user_id: userId,
+        fk_user_id: user.id,
       }).run()
 
       if (processed.comment) {
@@ -64,7 +59,7 @@ export default defineEventHandler(async (event) => {
           fk_upload_id: uploadUlid,
           comment: processed.comment,
           created_at: Date.now(),
-          fk_user_id: userId,
+          fk_user_id: user.id,
         })
       }
     }

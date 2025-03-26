@@ -74,7 +74,7 @@ const resultSnackbarVisible = ref(false)
 
 async function uploadFiles() {
   const formData = new FormData()
-  resolvedFiles.value.forEach(async (file, index) => {
+  await Promise.all(resolvedFiles.value.map(async (file, index) => {
     const f = file.fileData
 
     formData.append(`${index}-file`, f)
@@ -88,7 +88,8 @@ async function uploadFiles() {
 
     const thumbnail = await generateThumbnail(f, 400, 400)
     formData.append(`${index}-thumbnail`, thumbnail!)
-  })
+  }))
+
   try {
     uploading.value = true
     await $api('/api/upload', {
@@ -122,7 +123,7 @@ async function uploadFiles() {
         :text="$t('action.upload')"
         icon="mdi:camera"
         color="primary"
-        variant="flat"
+        variant="elevated"
         @click="() => {
           open()
         }"
@@ -176,7 +177,7 @@ async function uploadFiles() {
                 <v-sheet class="h-full w-full flex-col gap-3 flex!">
                   <div
                     v-if="file.src"
-                    class="min-h-0 flex-1 bg-black"
+                    class="min-h-0 flex-1"
                   >
                     <img
                       v-if="file.type.startsWith('image')"

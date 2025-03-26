@@ -46,6 +46,7 @@ export const useUploadsStore = defineStore('uploads', () => {
         reacted: upload.reacted,
         byName: upload.userName,
         createdAt: DateTime.fromMillis(upload.createdAt),
+        approvedForGallery: upload.approvedForGallery,
       })) ?? [],
     ], 'id') ?? []
 

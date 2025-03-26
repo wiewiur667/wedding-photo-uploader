@@ -11,6 +11,8 @@ interface Props {
   upload: IUpload
 }
 
+const { isAdmin } = storeToRefs(useUserStore())
+
 async function download() {
   const u = await $api(`/api/uploads/${upload.id}`, {
     method: 'GET',
@@ -37,12 +39,23 @@ const commentsRef = ref<typeof CommentsView>()
 function openComments() {
   commentsRef?.value?.open()
 }
+
+const dialog = ref(false)
+
+function closeDialog() {
+  dialog.value = false
+}
+
+function acceptForGallery() {
+  // Add your logic to accept the upload for gallery display here
+  closeDialog()
+}
 </script>
 
 <template>
-  <div class="grid grid-flow-row grid-rows-[min-content_1fr_min-content] bg-black h-dvh">
-    <div class="mb-3 flex items-center justify-between gap-3 bg-black p-2">
-      <div class="flex flex-col text-white">
+  <div class="grid grid-flow-row grid-rows-[min-content_1fr_min-content] bg-white/90 h-dvh">
+    <div class="mb-3 flex items-center justify-between gap-3 p-2">
+      <div class="flex flex-col text-black">
         <span class="truncate">{{ upload.name }}</span>
         <span class="text-xs">{{ upload.createdAt.toFormat(defaultDateFormat) }} {{ upload.byName }}</span>
       </div>
@@ -57,10 +70,10 @@ function openComments() {
         <Icon name="mdi:close" />
       </v-btn>
     </div>
-    <div class="flex items-center justify-center min-h-0!">
+    <div class="flex items-center justify-center p-3 min-h-0!">
       <img
         :src="`/api/uploads/${upload.id}`"
-        class="object-contain object-center max-h-full! max-w-full! min-h-0!"
+        class="overflow-hidden object-contain object-center max-h-full! max-w-full! min-h-0! rounded-xl!"
         :alt="upload.name"
       >
     </div>
@@ -83,7 +96,7 @@ function openComments() {
         />
       </div>
       <div
-        class="flex items-center justify-between gap-3 bg-black p-6 text-white"
+        class="flex items-center justify-between gap-3 overflow-auto bg-black p-6 text-white"
       >
         <reactions-view
           ref="reactionsRef"
@@ -103,6 +116,47 @@ function openComments() {
           prepend-icon="mdi-download-outline"
           @click="download"
         />
+        <!-- Delete -->
+        <v-dialog v-if="isAdmin">
+          <template #activator="{ props }">
+            <v-btn
+              v-bind="props"
+              flat
+              size="small"
+              variant="text"
+              :text="$t('action.delete')"
+              prepend-icon="mdi-bin-outline"
+            />
+          </template>
+        </v-dialog>
+        <!-- Accept for gallery -->
+        <v-dialog v-if="isAdmin">
+          <template #activator="{ props }">
+            <v-btn
+              v-bind="props"
+              flat
+              size="small"
+              variant="text"
+              :text="$t('action.acceptForGallery')"
+              prepend-icon="mdi-check"
+            />
+          </template>
+          <v-card>
+            <v-card-title>{{ $t('acceptForGallery.title') }}</v-card-title>
+            <v-card-text>{{ $t('acceptForGallery.confirmation') }}</v-card-text>
+            <v-card-actions>
+              <v-btn
+                color="primary"
+                @click="acceptForGallery"
+              >
+                {{ $t('action.confirm') }}
+              </v-btn>
+              <v-btn @click="closeDialog">
+                {{ $t('action.cancel') }}
+              </v-btn>
+            </v-card-actions>
+          </v-card>
+        </v-dialog>
       </div>
     </div>
   </div>

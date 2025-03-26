@@ -6,7 +6,9 @@ const { uploads, uploadsLoading } = storeToRefs(uploadsStore)
 
 await uploadsStore.getUploads()
 
-const columns = 3
+const { mdAndUp } = useDisplay()
+
+const columns = computed(() => mdAndUp.value ? 8 : 2)
 
 const previewDialogOpen = ref(false)
 const previewDialogIndex = ref(0)
@@ -43,6 +45,7 @@ const uploadsList = computed(() => uniqBy(uploads.value, 'id'))
         :key="upload.id"
       >
         <uploads-gallery-item
+          class="shadow-dark-100 shadow-md"
           :upload="upload"
           @open="() => previewUpload(index)"
           @react="() => reactToUpload(upload.id)"
@@ -51,15 +54,32 @@ const uploadsList = computed(() => uniqBy(uploads.value, 'id'))
     </div>
     <v-dialog
       v-model="previewDialogOpen"
+
       fullscreen
     >
       <upload-preview-dialog
+
+        v-touch="{
+          down: () => previewDialogOpen = false,
+        }"
         :index="previewDialogIndex"
+
         :upload="uploads.find(upload => upload.id === uploadsList[previewDialogIndex].id)!"
+        class="touch-manipulation!"
         @close="(id) => onDialogClose(id)"
         @react="(id) => reactToUpload(id)"
       />
     </v-dialog>
+    <v-overlay
+      :model-value="uploadsLoading"
+      class="align-center justify-center"
+    >
+      <v-progress-circular
+        color="primary"
+        size="64"
+        indeterminate
+      />
+    </v-overlay>
   </div>
 </template>
 
@@ -67,7 +87,7 @@ const uploadsList = computed(() => uniqBy(uploads.value, 'id'))
 .gallery-grid {
   display: grid;
   grid-template-columns: repeat(v-bind(columns), minmax(60px, 1fr));
-  grid-gap: 0.5rem;
-  margin: 0.5rem;
+  grid-gap: 0.75rem;
+  margin: 0.75rem;
 }
 </style>

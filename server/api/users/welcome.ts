@@ -31,15 +31,18 @@ export default defineEventHandler(async (event) => {
     const id = ulid()
     await db.insert(userTable).values({
       id,
-      session_id: ulid(),
       name,
       created_at: Date.now(),
       is_admin: code === adminCode,
     })
 
-    const user = (await db.select().from(userTable).where(eq(userTable.id, id)))[0]
+    const user = await db.query.user.findFirst({
+      where: (eq(userTable.id, id)),
+    })
 
-    return user
+    await setUserSession(event, {
+      user,
+    })
   }
   catch (error) {
     console.error(error)
