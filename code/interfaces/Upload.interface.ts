@@ -6,7 +6,7 @@ export interface IUpload {
   name: string
   commentsCount: number
   reactionsCount: number
-  createdAt: DateTime
+  created: DateTime
   reacted: boolean
   byName: string
   approvedForGallery: boolean

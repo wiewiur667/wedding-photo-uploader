@@ -1,13 +1,12 @@
-import { and, count, desc, eq } from 'drizzle-orm'
+import { desc, eq } from 'drizzle-orm'
 import { db } from '~/db'
 import { reaction, reaction as reactionTable, user as userTable } from '~/db/schema'
 
 export default defineEventHandler(async (event) => {
   const id = getRouterParam(event, 'id')
-  const sessionId = getHeader(event, 'Session-Id')
 
-  if (!id || !sessionId) {
-    setResponseStatus(event, 400, 'id, sessionId is required')
+  if (!id) {
+    setResponseStatus(event, 400, 'id is required')
     return
   }
 

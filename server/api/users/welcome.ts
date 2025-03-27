@@ -16,7 +16,7 @@ export default defineEventHandler(async (event) => {
   }
 
   if (!name || !code) {
-    setResponseStatus(event, 400, 'Name and Session-Id are required')
+    setResponseStatus(event, 400, 'Name and Code are required')
     return
   }
 
@@ -36,12 +36,21 @@ export default defineEventHandler(async (event) => {
       is_admin: code === adminCode,
     })
 
-    const user = await db.query.user.findFirst({
+    const userData = await db.query.user.findFirst({
       where: (eq(userTable.id, id)),
     })
 
+    if (!userData) {
+      setResponseStatus(event, 404, 'User not found')
+      return
+    }
+
     await setUserSession(event, {
-      user,
+      user: {
+        isAdmin: !!userData.is_admin,
+        id: userData.id,
+        name: userData.name,
+      },
     })
   }
   catch (error) {

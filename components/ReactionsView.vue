@@ -21,7 +21,7 @@ function open() {
   reactions.visible = true
 }
 
-const { execute, data: reactionsData } = useApi<any[]>(`/api/uploads/${targetId.value}/reaction`, {
+const { execute, data: reactionsData } = useFetch<any[]>(`/api/uploads/${targetId.value}/reaction`, {
   immediate: false,
   method: 'GET',
 

@@ -5,6 +5,6 @@ export interface IUploadInfo {
   commentsCount: number
   reactionsCount: number
   reacted: boolean
-  timestamp: number
+  created: number
   userName: string | null
 }

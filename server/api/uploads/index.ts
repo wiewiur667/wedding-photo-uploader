@@ -26,7 +26,7 @@ export default defineEventHandler(async (event) => {
             .from(reaction)
             .where(and(eq(reaction.fk_upload_id, uploadTable.id), eq(reaction.fk_user_id, user.id))),
         ),
-        createdAt: uploadTable.created_at,
+        created: uploadTable.created,
         userName: userTable.name,
         approvedForGallery: galleryApproval.approved,
       })
@@ -34,7 +34,7 @@ export default defineEventHandler(async (event) => {
       .leftJoin(userTable, eq(userTable.id, uploadTable.fk_user_id))
       .leftJoin(galleryApproval, eq(galleryApproval.fk_upload_id, uploadTable.id))
       .groupBy(uploadTable.id)
-      .orderBy(desc(uploadTable.created_at))
+      .orderBy(desc(uploadTable.created))
       .limit(limitVal)
       .offset(offsetVal)
 
@@ -50,7 +50,7 @@ export default defineEventHandler(async (event) => {
       reactionsCount: row.reactionsCount ?? 0,
       reacted: !!row.reacted,
       userName: row.userName,
-      createdAt: row.createdAt,
+      created: row.created,
       approvedForGallery: row.approvedForGallery ?? false,
     }))
 

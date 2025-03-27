@@ -8,8 +8,8 @@ export const upload = sqliteTable('upload', {
   thumbnail: text().notNull(),
   mime_type: text().notNull(),
   size: int().notNull(),
-  created_at: int().notNull(),
-  last_modified: int().notNull(),
+  uploaded: int().notNull(),
+  created: int().notNull(),
   fk_user_id: text().notNull(),
 })
 

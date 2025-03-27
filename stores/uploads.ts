@@ -1,4 +1,3 @@
-import type { IPagedResult } from '~/code/interfaces/PagedResult.interface'
 import type { IUpload } from '~/code/interfaces/Upload.interface'
 import type { IUploadInfo } from '~/code/interfaces/UploadInfo.interface'
 import { uniqBy } from 'lodash-es'
@@ -37,7 +36,7 @@ export const useUploadsStore = defineStore('uploads', () => {
         reactionsCount: upload.reactionsCount,
         reacted: upload.reacted,
         byName: upload.userName,
-        createdAt: DateTime.fromMillis(upload.createdAt),
+        created: DateTime.fromMillis(upload.created),
         approvedForGallery: upload.approvedForGallery,
       })) ?? [],
     ], 'id') ?? []
@@ -52,8 +51,6 @@ export const useUploadsStore = defineStore('uploads', () => {
       offset.value = o
     }
     _getUploads()
-
-    return 
   }
 
   async function updateInfo(id: string) {
@@ -61,7 +58,7 @@ export const useUploadsStore = defineStore('uploads', () => {
     if (!u)
       return
 
-    const upload = await $api<IUploadInfo>(`api/uploads/${id}/info`)
+    const upload = await $fetch<IUploadInfo>(`api/uploads/${id}/info`)
 
     if (status.value === 'success') {
       const result = toValue(upload)
@@ -78,6 +75,6 @@ export const useUploadsStore = defineStore('uploads', () => {
     getUploads,
     uploads,
     updateInfo,
-    refresh
+    refresh,
   }
 })

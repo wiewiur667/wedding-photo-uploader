@@ -1,20 +1,14 @@
 import type { IUploadInfo } from '~/code/interfaces/UploadInfo.interface'
-import { and, count, eq, exists } from 'drizzle-orm'
+import { and, eq, exists } from 'drizzle-orm'
 import { db } from '~/db'
 import { comment, reaction, upload as uploadTable, user as userTable } from '~/db/schema'
 
 export default defineEventHandler(async (event) => {
-  const sessionId = getHeader(event, 'Session-Id')
+  const { user } = await requireUserSession(event)
   const id = getRouterParam(event, 'id')
 
-  if (!sessionId || !id) {
-    setResponseStatus(event, 400, 'Session-Id header is required')
-    return
-  }
-
-  const user = (await db.select().from(userTable).where(eq(userTable.session_id, sessionId)))[0]
-  if (!user) {
-    setResponseStatus(event, 401, 'Unauthorized')
+  if (!id) {
+    setResponseStatus(event, 400, 'id is required')
     return
   }
 
@@ -35,7 +29,7 @@ export default defineEventHandler(async (event) => {
               eq(reaction.fk_user_id, user.id),
             )),
         ),
-        timestamp: uploadTable.created_at,
+        created: uploadTable.created,
         userName: userTable.name,
       })
       .from(uploadTable)
@@ -44,7 +38,7 @@ export default defineEventHandler(async (event) => {
       .where(eq(uploadTable.id, id))
 
     const result = (await upload)[0]
-    return {...result, reacted: !!result.reacted} as IUploadInfo
+    return { ...result, reacted: !!result.reacted } as IUploadInfo
   }
   catch (error) {
     console.error(error)

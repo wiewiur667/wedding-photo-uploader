@@ -1,12 +1,14 @@
 <script lang="ts" setup>
 import { useFileDialog } from '@vueuse/core'
 import ExifReader from 'exifreader'
+import { DateTime } from 'luxon'
 import { generateThumbnail } from '~/code/utils'
 
 const dialogVisibleModel = ref(false)
 
 const { open, onChange, onCancel } = useFileDialog({
   accept: 'image/jpeg,image/heic,image/heif,image/png', // Set to accept only image files
+  reset: true,
 })
 
 interface ImageData {
@@ -37,7 +39,7 @@ onChange((files) => {
       type: f.type,
       lastModified: f.lastModified,
       fileData: f,
-      exif: {},
+      exif: ref({}),
     })
 
     result.src = URL.createObjectURL(f)
@@ -73,16 +75,17 @@ const resultSnackbarVisible = ref(false)
 
 async function uploadFiles() {
   const formData = new FormData()
-  await Promise.all(resolvedFiles.value.map(async (file, index) => {
+  await Promise.all(toValue(resolvedFiles).map(async (file, index) => {
     const f = file.fileData
 
+    const createdDate = toValue(file.exif)['Date Created']?.value as string
     formData.append(`${index}-file`, f)
     formData.append(`${index}-meta`, JSON.stringify({
       name: file.name,
       comment: file.comment,
       size: f.size,
       type: f.type,
-      lastModified: f.lastModified,
+      created: createdDate ? DateTime.fromFormat(createdDate, 'yyyy-MM-dd hh:mm').toMillis() : f.lastModified,
     }))
 
     const thumbnail = await generateThumbnail(f, 400, 400)
@@ -91,8 +94,9 @@ async function uploadFiles() {
 
   try {
     uploading.value = true
-    await $api('/api/upload', {
+    await $fetch('/api/upload', {
       body: formData,
+      method: 'POST',
     })
 
     resultSnackbarVisible.value = true

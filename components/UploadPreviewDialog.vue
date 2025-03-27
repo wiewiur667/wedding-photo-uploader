@@ -14,7 +14,7 @@ interface Props {
 const { isAdmin } = storeToRefs(useUserStore())
 
 async function download() {
-  const u = await $api(`/api/uploads/${upload.id}`, {
+  const u = await $fetch(`/api/uploads/${upload.id}`, {
     method: 'GET',
   })
 
@@ -57,7 +57,7 @@ function acceptForGallery() {
     <div class="mb-3 flex items-center justify-between gap-3 p-2">
       <div class="flex flex-col text-black">
         <span class="truncate">{{ upload.name }}</span>
-        <span class="text-xs">{{ upload.createdAt.toFormat(defaultDateFormat) }} {{ upload.byName }}</span>
+        <span class="text-xs">{{ upload.created.toFormat(defaultDateFormat) }} {{ upload.byName }}</span>
       </div>
       <v-btn
         color="error"

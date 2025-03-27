@@ -1,16 +1,10 @@
 <script lang="ts" setup>
 import { FetchError } from 'ofetch'
-import { storeToRefs } from 'pinia'
 import { useField, useForm } from 'vee-validate'
 
 definePageMeta({
   layout: 'default',
 })
-
-const userStore = useUserStore()
-const router = useRouter()
-
-const routeCode = useRoute().query.code
 
 const { handleSubmit, meta } = useForm({
   validationSchema: {
@@ -26,8 +20,9 @@ const { handleSubmit, meta } = useForm({
     },
   },
 })
+const route = useRoute()
+const routeCode = route.query.code as string | undefined
 
-const { userName, sessionId, isAdmin, userId } = storeToRefs(userStore)
 const name = useField('name')
 const code = useField('code')
 
@@ -48,17 +43,10 @@ const submit = handleSubmit(async (values) => {
           code: values.code,
         },
       })
-      const { user, fetch: refreshSession } = useUserSession()
-      console.log('userData', user)
+      const { fetch: refreshSession } = useUserSession()
 
       await refreshSession()
-
-      if (user) {
-        userName.value = user.value.name
-        isAdmin.value = user.value.is_admin
-        userId.value = user.value.id
-        await navigateTo('/')
-      }
+      await navigateTo('/')
     }
     catch (error) {
       if (error instanceof FetchError) {

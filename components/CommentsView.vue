@@ -32,7 +32,7 @@ function open() {
   comments.visible = true
 }
 
-const { execute, refresh, status, data: commentsData } = useApi<IPagedResult<IComment>>(`/api/uploads/${targetId.value}/comment`, {
+const { execute, refresh, status, data: commentsData } = useFetch<IPagedResult<IComment>>(`/api/uploads/${targetId.value}/comment`, {
   immediate: false,
   method: 'GET',
   params: {
@@ -65,7 +65,8 @@ watch(commentsData, (data) => {
 await execute()
 
 async function addComment() {
-  await $api(`/api/uploads/${targetId.value}/comment`, {
+  await $fetch(`/api/uploads/${targetId.value}/comment`, {
+    method: 'POST',
     body: JSON.stringify({
       comment: commentText.value,
     }),

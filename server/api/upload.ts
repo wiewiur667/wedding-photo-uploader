@@ -49,7 +49,8 @@ export default defineEventHandler(async (event) => {
         name: processed.name,
         mime_type: processed.type,
         size: processed.size,
-        created_at: Date.now(),
+        uploaded: Date.now(),
+        created: processed.created,
         fk_user_id: user.id,
       }).run()
 

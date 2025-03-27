@@ -1,4 +1,4 @@
-import { and, count, eq, exists } from 'drizzle-orm'
+import { and, eq } from 'drizzle-orm'
 import { ulid } from 'ulid'
 
 import { db } from '~/db'
@@ -12,14 +12,14 @@ export default defineEventHandler(async (event) => {
 
   if (!id || !reaction) {
     setResponseStatus(event, 400)
-    return
+    return {}
   }
 
   const userId = (await db.select().from(userTable).where(eq(userTable.id, user.id)))[0]?.id
 
   if (!userId) {
     setResponseStatus(event, 401, 'Unauthorized')
-    return
+    return {}
   }
 
   const reacted = await db
@@ -59,5 +59,5 @@ export default defineEventHandler(async (event) => {
     }
   }
 
-  return true
+  return {}
 })
