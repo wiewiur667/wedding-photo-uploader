@@ -9,6 +9,7 @@ export const upload = sqliteTable('upload', {
   mime_type: text().notNull(),
   size: int().notNull(),
   created_at: int().notNull(),
+  last_modified: int().notNull(),
   fk_user_id: text().notNull(),
 })
 

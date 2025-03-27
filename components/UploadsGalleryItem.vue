@@ -22,40 +22,41 @@ defineEmits(['open', 'react'])
       click: () => $emit('open'),
       dblclick: () => $emit('react'),
     }"
-    class="square relative touch-manipulation overflow-hidden"
+    class="relative touch-manipulation overflow-hidden"
   >
-    <img
+    <v-img
       :src="`/api/uploads/${upload.id}`"
-      class="content h-full object-cover object-center"
+      cover
       :alt="upload.name"
     >
-    <div class="absolute bottom-0 left-0 right-0 flex flex-col justify-between p-2">
-      <div class="flex justify-between">
-        <v-chip
-          color="primary"
-          variant="flat"
-          size="small"
-        >
-          <div class="flex items-center gap-2">
-            <Icon :name="upload.commentsCount ? 'mdi:comment' : 'mdi:comment-outline'" />
-            <span>{{ upload.commentsCount ?? 0 }}</span>
-          </div>
-        </v-chip>
-        <v-chip
-          size="small"
-          variant="flat"
-          color="gray"
-        >
-          <div class="flex items-center gap-2">
-            <Icon
-              :name="upload.reacted ? 'mdi:heart' : 'mdi:heart-outline'"
-              color="red"
-            />
-            <span>{{ upload.reactionsCount ?? 0 }}</span>
-          </div>
-        </v-chip>
+      <div class="absolute bottom-0 left-0 right-0 flex flex-col justify-between p-2">
+        <div class="flex justify-between">
+          <v-chip
+            color="primary"
+            variant="flat"
+            size="small"
+          >
+            <div class="flex items-center gap-2">
+              <Icon :name="upload.commentsCount ? 'mdi:comment' : 'mdi:comment-outline'" />
+              <span>{{ upload.commentsCount ?? 0 }}</span>
+            </div>
+          </v-chip>
+          <v-chip
+            size="small"
+            variant="flat"
+            color="gray"
+          >
+            <div class="flex items-center gap-2">
+              <Icon
+                :name="upload.reacted ? 'mdi:heart' : 'mdi:heart-outline'"
+                color="red"
+              />
+              <span>{{ upload.reactionsCount ?? 0 }}</span>
+            </div>
+          </v-chip>
+        </div>
       </div>
-    </div>
+    </v-img>
   </div>
 </template>
 

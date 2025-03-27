@@ -4,7 +4,6 @@ import type { IUploadInfo } from '~/code/interfaces/UploadInfo.interface'
 import { uniqBy } from 'lodash-es'
 import { DateTime } from 'luxon'
 import { defineStore } from 'pinia'
-import { useApi } from '~/composables/useApi'
 
 export const useUploadsStore = defineStore('uploads', () => {
   const uploads = ref<IUpload[]>([])
@@ -13,7 +12,7 @@ export const useUploadsStore = defineStore('uploads', () => {
   const limit = ref(50)
   const offset = ref(0)
 
-  const { execute: _getUploads, status, data: uploadsData } = useApi<IPagedResult<{
+  const { execute: _getUploads, status, data: uploadsData, refresh } = getPagedData<{
     id: string
     name: string
     mimetype: string
@@ -22,14 +21,7 @@ export const useUploadsStore = defineStore('uploads', () => {
     reacted: boolean
     userName: string
     timestamp: number
-  }>>(`api/uploads`, {
-    params: {
-      limit: limit.value,
-      offset: offset.value,
-    },
-    immediate: false,
-    key: 'uploads',
-  })
+  }>('uploads', `api/uploads`, offset.value, limit.value)
 
   watch(uploadsData, (uploadDataValue) => {
     if (!uploadDataValue)
@@ -59,7 +51,9 @@ export const useUploadsStore = defineStore('uploads', () => {
       limit.value = l
       offset.value = o
     }
-    await _getUploads()
+    _getUploads()
+
+    return 
   }
 
   async function updateInfo(id: string) {
@@ -84,5 +78,6 @@ export const useUploadsStore = defineStore('uploads', () => {
     getUploads,
     uploads,
     updateInfo,
+    refresh
   }
 })

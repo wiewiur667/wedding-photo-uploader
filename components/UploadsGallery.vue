@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import { uniqBy } from 'lodash-es'
+import { DateTime } from 'luxon'
 
 const uploadsStore = useUploadsStore()
 const { uploads, uploadsLoading } = storeToRefs(uploadsStore)
@@ -34,24 +35,72 @@ async function reactToUpload(id: string) {
   await uploadsStore.updateInfo(id)
 }
 
-const uploadsList = computed(() => uniqBy(uploads.value, 'id'))
+const groupedUploads = computed(() => {
+  const uniqueItems = uniqBy(uploads.value, 'id')
+  const grouped = {}
+
+  uniqueItems.forEach((upload) => {
+    // Parse the createdAt date
+    const dt = upload.createdAt
+    const dateKey = dt.toFormat('yyyy-MM-dd') // Date as key
+    const hourKey = dt.toFormat('HH') // Hour as key
+
+    // Initialize date group if it doesn't exist
+    if (!grouped[dateKey]) {
+      grouped[dateKey] = {
+        date: dt.toFormat('cccc, d LLLL yyyy'), // Formatted date for display
+        hours: {},
+      }
+    }
+
+    // Initialize hour group if it doesn't exist
+    if (!grouped[dateKey].hours[hourKey]) {
+      grouped[dateKey].hours[hourKey] = {
+        hour: dt.toFormat('HH:00'), // Formatted hour for display
+        items: [],
+      }
+    }
+
+    // Add upload to its group
+    grouped[dateKey].hours[hourKey].items.push(upload)
+  })
+
+  return grouped
+
+  // Convert to array format for easier iteration in template
+  // return Object.entries(grouped).map(([dateKey, dateGroup]) => {
+  //   return {
+  //     date: dateGroup.date,
+  //     hours: Object.entries(dateGroup.hours).map(([hourKey, hourGroup]) => {
+  //       return {
+  //         hour: hourGroup.hour,
+  //         items: hourGroup.items
+  //       }
+  //     }).sort((a, b) => b.hour.localeCompare(a.hour)) // Sort hours in descending order
+  //   }
+  // }).sort((a, b) => {
+  //   // Extract date objects for comparison
+  //   const dateA = DateTime.fromFormat(dateGroup.date, 'cccc, d LLLL yyyy')
+  //   const dateB = DateTime.fromFormat(dateGroup.date, 'cccc, d LLLL yyyy')
+  //   return dateB < dateA ? -1 : 1 // Sort dates in descending order
+  // })
+})
 </script>
 
 <template>
-  <div>
-    <div class="gallery-grid text-white!">
-      <template
-        v-for="(upload, index) in uploadsList"
-        :key="upload.id"
-      >
-        <uploads-gallery-item
-          class="shadow-dark-100 shadow-md"
-          :upload="upload"
-          @open="() => previewUpload(index)"
-          @react="() => reactToUpload(upload.id)"
-        />
-      </template>
-    </div>
+  <div class="columns-2 gap-4 md:columns-4 space-y-4">
+    <template
+      v-for="(upload, index) in uploadsList"
+      :key="upload.id"
+    >
+      <uploads-gallery-item
+        class="grid-item rounded-lg"
+        :upload="upload"
+        @open="() => previewUpload(index)"
+        @react="() => reactToUpload(upload.id)"
+      />
+    </template>
+
     <v-dialog
       v-model="previewDialogOpen"
 
@@ -85,9 +134,8 @@ const uploadsList = computed(() => uniqBy(uploads.value, 'id'))
 
 <style lang="scss">
 .gallery-grid {
-  display: grid;
-  grid-template-columns: repeat(v-bind(columns), minmax(60px, 1fr));
-  grid-gap: 0.75rem;
-  margin: 0.75rem;
+  display: masonry;
+  masonry-template-tracks: repeat(auto-fill, minmax(14rem, 1fr));
+  gap: 1rem;
 }
 </style>

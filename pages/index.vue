@@ -6,6 +6,7 @@ definePageMeta({
 
 <template>
   <div class="flex flex-1 flex-col px-1 py-1">
+    <!-- Top photos -->
     <uploads-gallery />
   </div>
 </template>

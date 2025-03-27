@@ -3,11 +3,10 @@ import { useFileDialog } from '@vueuse/core'
 import ExifReader from 'exifreader'
 import { generateThumbnail } from '~/code/utils'
 
-const { mdAndDown } = useDisplay()
 const dialogVisibleModel = ref(false)
 
 const { open, onChange, onCancel } = useFileDialog({
-  accept: 'image/jpeg,image/heic,image/heif', // Set to accept only image files
+  accept: 'image/jpeg,image/heic,image/heif,image/png', // Set to accept only image files
 })
 
 interface ImageData {
@@ -98,6 +97,7 @@ async function uploadFiles() {
 
     resultSnackbarVisible.value = true
     dialogVisibleModel.value = false
+    refreshNuxtData('uploads')
   }
   catch (e) {
     console.error(e)
@@ -110,11 +110,10 @@ async function uploadFiles() {
 </script>
 
 <template>
-  <v-dialog
+  <v-bottom-sheet
     v-model="dialogVisibleModel"
     scrollable
     persistent
-    :fullscreen="mdAndDown"
     max-width="800px"
   >
     <template #activator>
@@ -161,87 +160,57 @@ async function uploadFiles() {
             <Icon name="mdi:close" />
           </v-btn>
         </v-card-title>
-        <v-card-text>
-          <div
-            v-if="!!resolvedFiles.length"
-            class="flex flex-col gap-5"
+        <v-card-text
+          v-if="!!resolvedFiles.length"
+          class="flex flex-col justify-end gap-5"
+        >
+          <v-carousel
+            v-model="carouselModel"
+            hide-delimiters
           >
-            <v-carousel
-              v-model="carouselModel"
-              hide-delimiters
+            <v-carousel-item
+              v-for="(file, index) in resolvedFiles"
+              :key="index"
             >
-              <v-carousel-item
-                v-for="(file, index) in resolvedFiles"
-                :key="index"
-              >
-                <v-sheet class="h-full w-full flex-col gap-3 flex!">
-                  <div
-                    v-if="file.src"
-                    class="min-h-0 flex-1"
+              <v-sheet class="h-full w-full flex-col gap-3 flex!">
+                <div
+                  v-if="file.src"
+                  class="min-h-0 flex-1"
+                >
+                  <img
+                    v-if="file.type.startsWith('image')"
+                    :src="file.src"
+                    class="m-auto block h-full max-w-full object-contain"
                   >
-                    <img
-                      v-if="file.type.startsWith('image')"
+                  <video
+                    v-else
+                    controls
+                    webkit-playsinline
+                    playsinline
+                    class="m-auto block h-full max-w-full object-contain"
+                  >
+                    <source
                       :src="file.src"
-                      class="m-auto block h-full max-w-full object-contain"
+                      type="video/mp4"
                     >
-                    <video
-                      v-else
-                      controls
-                      webkit-playsinline
-                      playsinline
-                      class="m-auto block h-full max-w-full object-contain"
-                    >
-                      <source
-                        :src="file.src"
-                        type="video/mp4"
-                      >
-                    </video>
-                  </div>
-                  <span v-else>{{ $t('noThumbnail') }}</span>
-                </v-sheet>
-              </v-carousel-item>
-            </v-carousel>
-            <div class="flex items-center justify-center gap-3">
-              <v-btn
-                variant="flat"
-                color="primary"
-                density="comfortable"
-                :text="$t('action.removePhoto')"
-                append-icon="mdi-close"
-                @click.stop="() => removeFile(carouselModel)"
-              />
-              <span class="">{{ carouselModel + 1 }} / {{ resolvedFiles.length }}</span>
-            </div>
-            <div>
-              <v-text-field
-                v-model="resolvedFiles[carouselModel].name"
-                label="Nazwa"
-                variant="solo-filled"
-                color="primary"
-                flat
-              />
-              <v-textarea
-                v-model="resolvedFiles[carouselModel].comment"
-                label="Komentarz"
-                variant="solo-filled"
-                flat
-              />
-            </div>
-          </div>
-          <div
-            v-else
-            class="flex flex-1 flex-col items-center justify-center gap-5"
-          >
-            <v-btn
-              color="primary"
-              variant="flat"
-              text="Wgraj zdjecia"
-              prepend-icon="mdi:camera"
-              @click="() => open()"
-            />
+                  </video>
+                </div>
+                <span v-else>{{ $t('noThumbnail') }}</span>
+              </v-sheet>
+            </v-carousel-item>
+          </v-carousel>
+          <div class="flex items-center justify-center gap-3">
+            <span class="">{{ carouselModel + 1 }} / {{ resolvedFiles.length }}</span>
           </div>
         </v-card-text>
         <v-card-actions>
+          <v-btn
+            color="primary"
+            density="comfortable"
+            :text="$t('action.removePhoto')"
+            append-icon="mdi-close"
+            @click.stop="() => removeFile(carouselModel)"
+          />
           <v-spacer />
           <v-btn
             v-if="!!resolvedFiles.length"
@@ -253,5 +222,5 @@ async function uploadFiles() {
         </v-card-actions>
       </v-card>
     </template>
-  </v-dialog>
+  </v-bottom-sheet>
 </template>

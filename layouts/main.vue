@@ -12,6 +12,8 @@ const userInitials = computed(() => {
   <v-app class="background__container bg-slate-100!">
     <v-app-bar
       class="app-bar__background__container px-3"
+      flat
+      scroll-behavior="hide"
     >
       <template #prepend>
         <v-app-bar-nav-icon />
@@ -48,7 +50,7 @@ const userInitials = computed(() => {
   bottom: 0;
   background-image: url('~/public/assets/couple-bg.jpg');
   background-size: cover;
-  background-position: center;
+  background-position: top;
   filter: blur(30px);
   transform: scale(1.2);
   z-index: 0;
