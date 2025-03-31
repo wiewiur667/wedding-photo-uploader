@@ -103,7 +103,7 @@ const groupedUploads = computed(() => {
 </script>
 
 <template>
-  <div class="flex flex-1 flex-col gap-2 px-2 py-2">
+  <div class="mb-20 flex flex-1 flex-col gap-2 px-2 py-2">
     <div
       v-for="(date) in groupedUploads"
       :key="date.date"
@@ -116,15 +116,20 @@ const groupedUploads = computed(() => {
         class="flex flex-1 flex-col gap-4"
       >
         <span>{{ hour.hour }}</span>
-        <div class="columns-2 gap-1 md:columns-4 space-y-1">
-          <uploads-gallery-item
+        <v-row>
+          <v-col
             v-for="(upload) in hour.items"
             :key="upload.id"
-            :upload="upload"
-            @open="() => previewUpload(upload)"
-            @react="() => reactToUpload(upload.id)"
-          />
-        </div>
+            cols="6"
+          >
+            <uploads-gallery-item
+
+              :upload="upload"
+              @open="() => previewUpload(upload)"
+              @react="() => reactToUpload(upload.id)"
+            />
+          </v-col>
+        </v-row>
       </div>
     </div>
 

@@ -65,8 +65,11 @@ export default defineNuxtConfig({
   },
 
   devServer: {
-    host: '192.168.1.195',
-    port: 3000,
+    url: 'https://192.168.1.196:3000',
+    https: {
+      key: './certs/192.168.1.196-key.pem',
+      cert: './certs/192.168.1.196.pem',
+    },
   },
 
   compatibilityDate: '2025-02-06',

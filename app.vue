@@ -1,5 +1,4 @@
 <template>
-  <VitePwaManifest />
   <NuxtLayout>
     <NuxtPage />
   </NuxtLayout>
@@ -13,8 +12,7 @@ html,
 body,
 #__nuxt {
   @apply h-dvh m-0 p-0;
-  @apply white;
-  @apply tracking-widest;
+  @apply tracking-wide;
 
   * {
     @apply min-w-0;
