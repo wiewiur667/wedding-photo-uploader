@@ -40,7 +40,7 @@ const userInitials = computed(() => {
     </v-main>
     <div class="fixed bottom-0 left-0 right-0 flex items-center gap-3 p-3">
       <div
-        class="flex flex-1 items-center justify-between gap-3 border rounded-md bg-clip-padding p-3 backdrop-blur-md backdrop-filter border-blue-100! rounded-full! bg-gray-500! bg-opacity-20!"
+        class="flex flex-1 items-center justify-between gap-3 border rounded-md bg-clip-padding p-3 backdrop-blur-sm backdrop-filter rounded-full! bg-gray-600! bg-opacity-20! text-white!"
       >
         <v-btn
           variant="tonal"

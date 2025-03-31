@@ -65,10 +65,10 @@ export default defineNuxtConfig({
   },
 
   devServer: {
-    url: 'https://192.168.1.196:3000',
+    url: 'https://192.168.1.195:3000',
     https: {
-      key: './certs/192.168.1.196-key.pem',
-      cert: './certs/192.168.1.196.pem',
+      key: './certs/192.168.1.195-key.pem',
+      cert: './certs/192.168.1.195.pem',
     },
   },
 

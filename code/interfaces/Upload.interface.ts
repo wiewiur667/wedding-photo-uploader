@@ -8,6 +8,7 @@ export interface IUpload {
   reactionsCount: number
   created: DateTime
   reacted: boolean
+  isOwner: boolean
   byName: string
   approvedForGallery: boolean
 }

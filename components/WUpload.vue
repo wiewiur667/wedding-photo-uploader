@@ -123,8 +123,7 @@ async function uploadFiles() {
     <template #activator>
       <v-btn
         variant="flat"
-        color="primary"
-        class="text-none"
+        class="text-none border rounded-md bg-clip-padding backdrop-blur-sm backdrop-filter bg-blue-900! bg-opacity-80! text-white/90!"
         icon="mdi-camera"
         @click="() => {
           open()

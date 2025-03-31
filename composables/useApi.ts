@@ -9,18 +9,23 @@ export function useAsyncDataApi<T = void>(
   })
 }
 
-export function getPagedData<T = any>(baseKey: string, url: string, page = 1, limit = 10) {
-  return useAsyncData<IPagedResult<T>>(
-    baseKey,
-    () => $fetch(url, {
-      method: 'POST',
-      params: {
-        page,
-        limit,
+export function getPagedData<T = any>(baseKey: string, url: string, offset: MaybeRef<number> = 10, limit: MaybeRef<number> = 10, options?: { params?: any }) {
+  return {
+    limit,
+    page: offset,
+    ...useAsyncData<IPagedResult<T>>(
+      baseKey,
+      () => $fetch(url, {
+        method: 'POST',
+        params: {
+          offset: toValue(offset),
+          limit: toValue(limit),
+          ...options?.params,
+        },
+      }),
+      {
+        immediate: false,
       },
-    }),
-    {
-      immediate: false,
-    },
-  )
+    ),
+  }
 }

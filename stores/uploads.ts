@@ -36,6 +36,7 @@ export const useUploadsStore = defineStore('uploads', () => {
         reactionsCount: upload.reactionsCount,
         reacted: upload.reacted,
         byName: upload.userName,
+        isOwner: upload.isOwner,
         created: DateTime.fromMillis(upload.created),
         approvedForGallery: upload.approvedForGallery,
       })) ?? [],
@@ -68,11 +69,25 @@ export const useUploadsStore = defineStore('uploads', () => {
     }
   }
 
+  async function removeUpload(id: string) {
+    const upload = uploads.value.find(p => p.id === id)
+    if (!upload)
+      return
+
+    await $fetch(`api/uploads/${id}`, { method: 'DELETE' })
+
+    if (status.value === 'success') {
+      uploads.value = uploads.value.filter(p => p.id !== id)
+      totalUploads.value -= 1
+    }
+  }
+
   const uploadsLoading = computed(() => status.value === 'pending')
 
   return {
     uploadsLoading,
     getUploads,
+    removeUpload,
     uploads,
     updateInfo,
     refresh,

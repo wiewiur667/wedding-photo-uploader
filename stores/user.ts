@@ -4,8 +4,8 @@ export const useUserStore = defineStore('user', () => {
   const { user } = useUserSession()
 
   const userId = ref(user.value?.id)
-  const userName = ref(user.value?.id)
-  const isAdmin = ref(false)
+  const userName = ref(user.value?.name)
+  const isAdmin = ref(user.value?.isAdmin)
 
   return {
     userId,

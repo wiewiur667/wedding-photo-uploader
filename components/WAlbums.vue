@@ -6,12 +6,12 @@ execute()
 
 <template>
   <div class="flex flex-col">
-    asdasd
-    <div class="min-w-0 flex flex-1 gap-6 overflow-auto bg-white p-4 active:bg-gray-100">
+    Albumy gosci
+    <div class="min-w-0 flex flex-1 gap-6 overflow-auto p-4">
       <div
         v-for="album in data"
         :key="album.id"
-        class="relative z-0 flex flex-none flex-col gap-1"
+        class="gap-1z relative z-0 flex flex-none flex-col"
       >
         <v-img
           :src="`/api/uploads/${album.id}`"

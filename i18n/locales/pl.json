@@ -42,5 +42,9 @@
   "acceptForGallery": {
     "title": "Zatwierdz zdjecie",
     "confirmation": "Zatwierdz zdjecie do bycia wyswietlonym w galerii"
+  },
+  "delete": {
+    "title": "Usun",
+    "confirmation": "Czy jestes pewny ze chcesz to usunac?"
   }
 }

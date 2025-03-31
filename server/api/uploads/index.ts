@@ -8,6 +8,7 @@ export default defineEventHandler(async (event) => {
   const query = getQuery(event)
   const limitVal = Number.parseInt(query?.limit as string ?? '10')
   const offsetVal = Number.parseInt(query?.offset as string ?? '0')
+  const userId = query?.userId as string
 
   const body = await readBody(event)
 
@@ -26,6 +27,7 @@ export default defineEventHandler(async (event) => {
             .from(reaction)
             .where(and(eq(reaction.fk_upload_id, uploadTable.id), eq(reaction.fk_user_id, user.id))),
         ),
+        isOwner: eq(uploadTable.fk_user_id, user.id),
         created: uploadTable.created,
         userName: userTable.name,
         approvedForGallery: galleryApproval.approved,
@@ -38,6 +40,9 @@ export default defineEventHandler(async (event) => {
       .limit(limitVal)
       .offset(offsetVal)
 
+    if (userId)
+      uploadsQuery.where(eq(uploadTable.fk_user_id, userId))
+
     if (body?.ids)
       uploadsQuery.where(inArray(uploadTable.id, []))
 
@@ -49,6 +54,7 @@ export default defineEventHandler(async (event) => {
       commentsCount: row.commentsCount ?? 0,
       reactionsCount: row.reactionsCount ?? 0,
       reacted: !!row.reacted,
+      isOwner: !!row.isOwner,
       userName: row.userName,
       created: row.created,
       approvedForGallery: row.approvedForGallery ?? false,

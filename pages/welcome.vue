@@ -110,7 +110,7 @@ const submit = handleSubmit(async (values) => {
                 <v-stepper-window-item :value="steps[0]">
                   <div class="flex flex-col gap-3 p-2">
                     <v-text-field
-                      v-model="name.value.value"
+                      v-model.trim="name.value.value"
                       type="string"
                       autocomplete="name"
                       label="Imię i nazwisko"
@@ -143,7 +143,7 @@ const submit = handleSubmit(async (values) => {
                     <span class="text-xs text-gray-500">
                       Kod dostępu jest wymagany do zalogowania się do aplikacji, możesz go znaleźć na winietce przy twoim siedzeniu</span>
                     <v-text-field
-                      v-model="code.value.value"
+                      v-model.trim="code.value.value"
                       type="number"
                       density="comfortable"
                       pattern="\d*"

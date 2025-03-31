@@ -2,16 +2,18 @@
 import type { CommentsView } from '#components'
 import type ReactionsView from './ReactionsView.vue'
 import type { IUpload } from '~/code/interfaces/Upload.interface'
+
 import { defaultDateFormat } from '~/code/utils'
 
 const { upload } = defineProps<Props>()
-defineEmits(['close', 'next', 'prev', 'react'])
+const emit = defineEmits(['close', 'next', 'prev', 'react'])
 
 interface Props {
   upload: IUpload
 }
 
 const { isAdmin } = storeToRefs(useUserStore())
+const { removeUpload } = useUploadsStore()
 
 async function download() {
   const u = await $fetch(`/api/uploads/${upload.id}`, {
@@ -40,25 +42,34 @@ function openComments() {
   commentsRef?.value?.open()
 }
 
-const dialog = ref(false)
-
 function closeDialog() {
-  dialog.value = false
+  emit('close')
 }
 
 function acceptForGallery() {
   // Add your logic to accept the upload for gallery display here
   closeDialog()
 }
+
+const removing = ref(false)
+async function remove() {
+  removing.value = true
+  try {
+    await removeUpload(upload.id)
+    closeDialog()
+  }
+  catch (error) {
+    console.error('Error removing upload:', error)
+  }
+  finally {
+    removing.value = false
+  }
+}
 </script>
 
 <template>
   <div class="grid grid-flow-row grid-rows-[min-content_1fr_min-content] bg-white/90 h-dvh">
-    <div class="mb-3 flex items-center justify-between gap-3 p-2">
-      <div class="flex flex-col text-black">
-        <span class="truncate">{{ upload.name }}</span>
-        <span class="text-xs">{{ upload.created.toFormat(defaultDateFormat) }} {{ upload.byName }}</span>
-      </div>
+    <div class="mb-3 flex items-center justify-end gap-3 p-3">
       <v-btn
         color="error"
         flat
@@ -78,25 +89,11 @@ function acceptForGallery() {
       >
     </div>
     <div class="mt-3 flex flex-col">
-      <div class="flex items-center justify-end gap-3 px-3 text-xs text-slate-300">
-        <v-btn
-          size="x-small"
-          variant="text"
-          prepend-icon="mdi-comment-outline"
-          :text="$t('komentarz', upload.commentsCount ?? 1)"
-          @click="() => openComments()"
-        />
-        <v-btn
-          size="x-small"
-          variant="text"
-          :prepend-icon="upload.reacted ? 'mdi-heart' : 'mdi-heart-outline'"
-          :text="`${upload.reactionsCount} ${$t('reactions.likes', upload.reactionsCount ?? 1)}`"
-          class="flex items-center gap-2"
-          @click="() => openReactions()"
-        />
+      <div class="flex items-center justify-end gap-3 p-3 text-xs text-slate-900">
+        <span class="text-xs">{{ upload.created.toFormat(defaultDateFormat) }} {{ upload.byName }}</span>
       </div>
       <div
-        class="flex items-center justify-between gap-3 overflow-auto bg-black p-6 text-white"
+        class="flex items-center justify-between gap-3 overflow-auto bg-gray-800 p-4 text-white"
       >
         <reactions-view
           ref="reactionsRef"
@@ -116,19 +113,7 @@ function acceptForGallery() {
           prepend-icon="mdi-download-outline"
           @click="download"
         />
-        <!-- Delete -->
-        <v-dialog v-if="isAdmin">
-          <template #activator="{ props }">
-            <v-btn
-              v-bind="props"
-              flat
-              size="small"
-              variant="text"
-              :text="$t('action.delete')"
-              prepend-icon="mdi-bin-outline"
-            />
-          </template>
-        </v-dialog>
+
         <!-- Accept for gallery -->
         <v-dialog v-if="isAdmin">
           <template #activator="{ props }">
@@ -148,6 +133,36 @@ function acceptForGallery() {
               <v-btn
                 color="primary"
                 @click="acceptForGallery"
+              >
+                {{ $t('action.confirm') }}
+              </v-btn>
+              <v-btn @click="closeDialog">
+                {{ $t('action.cancel') }}
+              </v-btn>
+            </v-card-actions>
+          </v-card>
+        </v-dialog>
+
+        <!-- Delete -->
+        <v-dialog v-if="upload.isOwner || isAdmin">
+          <template #activator="{ props }">
+            <v-btn
+              v-bind="props"
+              flat
+              size="small"
+              variant="text"
+              :text="$t('action.delete')"
+              prepend-icon="mdi-bin-outline"
+            />
+          </template>
+          <v-card>
+            <v-card-title>{{ $t('delete.title') }}</v-card-title>
+            <v-card-text>{{ $t('delete.confirmation') }}</v-card-text>
+            <v-card-actions>
+              <v-btn
+                color="primary"
+                :loading="removing"
+                @click="remove()"
               >
                 {{ $t('action.confirm') }}
               </v-btn>

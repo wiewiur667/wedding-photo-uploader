@@ -1,13 +1,9 @@
 import { eq } from 'drizzle-orm'
 import { db } from '~/db'
-import { comment as commentTable, upload as uploadTable } from '~/db/schema'
+import { comment as commentTable, reaction as reactionTable, upload as uploadTable, user as userTable } from '~/db/schema'
 
 export default defineEventHandler(async (event) => {
-  const user = event.context.auth.user
-  if (!user || !user.is_admin) {
-    setResponseStatus(event, 401, 'Unauthorized')
-    return
-  }
+  const { user } = await requireUserSession(event)
 
   const uploadId = getRouterParam(event, 'id')
   const storage = useStorage('fs')
@@ -17,10 +13,19 @@ export default defineEventHandler(async (event) => {
     return
   }
 
+  const dbUser = await db.query.user.findFirst({
+    where: eq(userTable.id, user.id),
+  })
+
   const upload = (await db
     .select()
     .from(uploadTable)
     .where(eq(uploadTable.id, uploadId))).at(0)
+
+  if (!dbUser?.is_admin && dbUser?.id !== upload?.fk_user_id) {
+    setResponseStatus(event, 403, 'You are not authorized to delete this upload')
+    return
+  }
 
   if (!upload) {
     setResponseStatus(event, 404, 'Upload not found')
@@ -30,6 +35,7 @@ export default defineEventHandler(async (event) => {
   try {
     await db.delete(uploadTable).where(eq(uploadTable.id, uploadId)).run()
     await db.delete(commentTable).where(eq(commentTable.fk_upload_id, uploadId)).run()
+    await db.delete(reactionTable).where(eq(reactionTable.fk_upload_id, uploadId)).run()
 
     const fileURL = upload.location
     const thumbnailURL = upload.location.replace(':', ':thumbnail-')
@@ -37,9 +43,13 @@ export default defineEventHandler(async (event) => {
     await storage.removeItem(fileURL)
     await storage.removeItem(thumbnailURL)
 
-    setResponseStatus(event, 204)
+    setResponseStatus(event, 200)
+
+    return {
+      status: 'success',
+    }
   }
   catch (e) {
-    setResponseStatus(event, 500, e.message)
+    return { e }
   }
 })

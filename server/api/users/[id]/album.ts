@@ -3,7 +3,7 @@ import { db } from '~/db'
 import { upload as uploadTable, user as userTable } from '~/db/schema'
 
 export default defineEventHandler(async (event) => {
-  await requireUserSession(event)
+  const { user } = requireUserSession(event)
 
   const topQuery = db
     .select({
