@@ -7,7 +7,7 @@ definePageMeta({
 
 <template>
   <div>
-    asdasd
+    Menu
   </div>
 </template>
 

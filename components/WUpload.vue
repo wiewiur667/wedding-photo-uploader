@@ -121,12 +121,11 @@ async function uploadFiles() {
     max-width="800px"
   >
     <template #activator>
-      <v-fab
-        app
-        :text="$t('action.upload')"
-        icon="mdi:camera"
+      <v-btn
+        variant="flat"
         color="primary"
-        variant="elevated"
+        class="text-none"
+        icon="mdi-camera"
         @click="() => {
           open()
         }"

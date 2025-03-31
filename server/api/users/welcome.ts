@@ -51,7 +51,10 @@ export default defineEventHandler(async (event) => {
         id: userData.id,
         name: userData.name,
       },
+      secure: false,
     })
+
+    return {}
   }
   catch (error) {
     console.error(error)

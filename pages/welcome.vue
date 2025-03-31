@@ -21,6 +21,7 @@ const { handleSubmit, meta } = useForm({
   },
 })
 const route = useRoute()
+const { fetch: refreshSession } = useUserSession()
 const routeCode = route.query.code as string | undefined
 
 const name = useField('name')
@@ -43,7 +44,6 @@ const submit = handleSubmit(async (values) => {
           code: values.code,
         },
       })
-      const { fetch: refreshSession } = useUserSession()
 
       await refreshSession()
       await navigateTo('/')

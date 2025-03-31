@@ -4,6 +4,7 @@ import 'dotenv/config'
 export default defineNuxtConfig({
 
   modules: [
+    'nuxt-auth-utils',
     '@vueuse/nuxt',
     '@unocss/nuxt',
     '@nuxtjs/color-mode',
@@ -12,13 +13,13 @@ export default defineNuxtConfig({
     '@nuxt/icon',
     '@nuxt/image',
     '@nuxtjs/i18n',
-    '@formkit/auto-animate/nuxt',
-    '@vite-pwa/nuxt',
+    // '@formkit/auto-animate/nuxt',
+    // '@vite-pwa/nuxt',
     '@pinia/nuxt',
     'pinia-plugin-persistedstate/nuxt',
     '@vee-validate/nuxt',
     'vuetify-nuxt-module',
-    'nuxt-auth-utils',
+
   ],
 
   ssr: false,
@@ -51,7 +52,7 @@ export default defineNuxtConfig({
 
   eslint: {
     config: {
-      standalone: false, // <---
+      standalone: false,
     },
   },
 
@@ -62,14 +63,16 @@ export default defineNuxtConfig({
     userCode: process.env.USER_CODE,
     adminCode: process.env.ADMIN_CODE,
   },
-  // devServer: {
-  //   host: '192.168.1.195',
-  //   port: 3000,
-  // },
+
+  devServer: {
+    host: '192.168.1.195',
+    port: 3000,
+  },
 
   compatibilityDate: '2025-02-06',
 
   nitro: {
+
     storage: {
       fs: {
         driver: 'fs',
@@ -80,6 +83,7 @@ export default defineNuxtConfig({
       database: true,
     },
   },
+
   image: {
     presets: {
       avatar: {
@@ -91,17 +95,27 @@ export default defineNuxtConfig({
       },
     },
   },
-  pwa: {
-    disable: true,
-    devOptions: {
-      enabled: true,
-    },
-  },
+  // pwa: {
+  //   disable: true,
+  //   devOptions: {
+  //     enabled: true,
+  //   },
+  // },
 
   vuetify: {
     vuetifyOptions: {
       icons: {
         defaultSet: 'custom',
+      },
+      theme: {
+        defaultTheme: 'wedding',
+        themes: {
+          wedding: {
+            colors: {
+              primary: '#1e3a8a',
+            },
+          },
+        },
       },
     },
   },

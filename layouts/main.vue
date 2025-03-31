@@ -1,24 +1,26 @@
 <script setup lang="ts">
+const { mobile } = useDisplay()
+
 const userStore = useUserStore()
 const { userName, isAdmin } = storeToRefs(userStore)
 
 const userInitials = computed(() => {
-  const initials = userName.value.split(' ').map((n: string) => n[0])
-  return `${initials.join('')}`
+  const initials = userName.value?.split(' ').map((n: string) => n[0])
+  return `${initials?.join('')}`
 })
 </script>
 
 <template>
-  <v-app class="background__container bg-slate-100!">
+  <v-app full-height>
     <v-app-bar
+      app
       class="app-bar__background__container px-3"
       flat
       scroll-behavior="hide"
     >
-      <template #prepend>
-        <v-app-bar-nav-icon />
-      </template>
-      <v-app-bar-title>K i S</v-app-bar-title>
+      <v-app-bar-title class="text-2xl font-thin!">
+        Klaudia i Sebastian
+      </v-app-bar-title>
 
       <template #append>
         <Icon
@@ -32,10 +34,60 @@ const userInitials = computed(() => {
         </v-chip>
       </template>
     </v-app-bar>
+
     <v-main class="flex flex-col">
       <slot />
     </v-main>
-    <w-upload />
+    <div class="fixed bottom-0 left-0 right-0 flex items-center gap-3 p-3">
+      <div
+        class="flex flex-1 items-center justify-between gap-3 border rounded-md bg-clip-padding p-3 backdrop-blur-md backdrop-filter border-blue-100! rounded-full! bg-gray-500! bg-opacity-20!"
+      >
+        <v-btn
+          variant="tonal"
+          class="text-none"
+          to="/"
+          rounded
+        >
+          <div class="flex gap-2">
+            <v-icon icon="mdi-home" />
+            <span v-if="!mobile">Home</span>
+          </div>
+        </v-btn>
+        <v-btn
+          variant="tonal"
+          class="text-none"
+          to="/menu"
+          rounded
+        >
+          <div class="flex gap-2">
+            <v-icon icon="mdi-book-open-page-variant" />
+            <span v-if="!mobile">Menu</span>
+          </div>
+        </v-btn>
+        <v-btn
+          variant="tonal"
+          class="text-none"
+          rounded
+        >
+          <div class="flex gap-2">
+            <v-icon icon="mdi-book-outline" />
+            <span v-if="!mobile">Plan</span>
+          </div>
+        </v-btn>
+        <v-btn
+          variant="tonal"
+          class="text-none"
+          rounded
+          to="/gallery"
+        >
+          <div class="flex gap-2">
+            <v-icon icon="mdi-camera" />
+            <span v-if="!mobile">Galeria</span>
+          </div>
+        </v-btn>
+      </div>
+      <w-upload />
+    </div>
   </v-app>
 </template>
 
