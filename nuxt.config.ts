@@ -14,7 +14,7 @@ export default defineNuxtConfig({
     '@nuxt/image',
     '@nuxtjs/i18n',
     // '@formkit/auto-animate/nuxt',
-    // '@vite-pwa/nuxt',
+    '@vite-pwa/nuxt',
     '@pinia/nuxt',
     'pinia-plugin-persistedstate/nuxt',
     '@vee-validate/nuxt',
@@ -37,7 +37,7 @@ export default defineNuxtConfig({
         { rel: 'apple-touch-icon', href: '/apple-touch-icon.png' },
       ],
       meta: [
-        { name: 'viewport', content: 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover' },
+        { name: 'viewport', content: 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=nox' },
         { name: 'description', content: 'TEST' },
         { name: 'apple-mobile-web-app-status-bar-style', content: 'black-translucent' },
         { name: 'theme-color', media: '(prefers-color-scheme: light)', content: 'white' },
@@ -99,10 +99,12 @@ export default defineNuxtConfig({
     },
   },
   // pwa: {
-  //   disable: true,
+  //   // disable: true,
   //   devOptions: {
   //     enabled: true,
+
   //   },
+
   // },
 
   vuetify: {

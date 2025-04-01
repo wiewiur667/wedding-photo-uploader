@@ -18,35 +18,22 @@ defineEmits(['open', 'react'])
 </script>
 
 <template>
-  <div
+  <v-card
     v-press="{
       click: () => $emit('open'),
       dblclick: () => $emit('react'),
     }"
-    class="relative touch-manipulation gap-3 overflow-hidden rounded-md!"
+    flat
+    class="relative touch-manipulation gap-1 overflow-hidden bg-transparent"
   >
     <v-img
       :src="`/api/uploads/${upload.id}`"
       :alt="upload.name"
-      aspect-ratio="1"
+      :aspect-ratio="9 / 12"
       lazy-src="https://picsum.photos/id/11/100/60"
       cover
+      rounded="md"
     >
-      <div class="absolute bottom-0 left-0 right-0 h-25% min-h-10 flex flex-col justify-end gap-3 from-black to-black/0 bg-gradient-to-t p-3 text-white">
-        <div class="flex gap-3">
-          <div class="flex items-center gap-2 text-xs">
-            <Icon :name="upload.commentsCount ? 'mdi:comment' : 'mdi:comment-outline'" />
-            <span>{{ upload.commentsCount ?? 0 }}</span>
-          </div>
-          <div class="flex items-center gap-2 text-xs">
-            <Icon
-              :name="upload.reacted ? 'mdi:heart' : 'mdi:heart-outline'"
-              color="red"
-            />
-            <span>{{ upload.reactionsCount ?? 0 }}</span>
-          </div>
-        </div>
-      </div>
       <template #placeholder>
         <div class="h-full flex flex-1 items-center justify-center">
           <v-progress-circular
@@ -56,7 +43,25 @@ defineEmits(['open', 'react'])
         </div>
       </template>
     </v-img>
-  </div>
+    <v-card-text
+      class="flex flex-col justify-end p-2!"
+    >
+      <span class="font-semibold">{{ upload.byName }}</span>
+      <div class="flex gap-3">
+        <div class="flex items-center gap-2 text-sm">
+          <Icon :name="upload.commentsCount ? 'mdi:comment' : 'mdi:comment-outline'" />
+          <span>{{ upload.commentsCount ?? 0 }}</span>
+        </div>
+        <div class="flex items-center gap-2 text-sm">
+          <Icon
+            :name="upload.reacted ? 'mdi:heart' : 'mdi:heart-outline'"
+            color="red"
+          />
+          <span>{{ upload.reactionsCount ?? 0 }}</span>
+        </div>
+      </div>
+    </v-card-text>
+  </v-card>
 </template>
 
 <style lang="scss">

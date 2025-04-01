@@ -35,13 +35,13 @@ if (routeCode)
   code.setValue(routeCode)
 
 const submit = handleSubmit(async (values) => {
-  if (values.name.length > 0) {
+  if (values.name.trim().length > 0) {
     try {
       await $fetch('/api/users/welcome', {
         method: 'POST',
         body: {
-          name: values.name,
-          code: values.code,
+          name: values.name.trim(),
+          code: values.code.trim(),
         },
       })
 
@@ -67,10 +67,7 @@ const submit = handleSubmit(async (values) => {
 </script>
 
 <template>
-  <div
-
-    class="relative flex flex-1 gap-3 p-6! font-sans!"
-  >
+  <div class="relative flex flex-1 items-center gap-3 md:max-w-md p-6! font-sans!">
     <div
       id="welcome-page-background"
       class="z-1"
@@ -110,7 +107,7 @@ const submit = handleSubmit(async (values) => {
                 <v-stepper-window-item :value="steps[0]">
                   <div class="flex flex-col gap-3 p-2">
                     <v-text-field
-                      v-model.trim="name.value.value"
+                      v-model="name.value.value"
                       type="string"
                       autocomplete="name"
                       label="Imię i nazwisko"
@@ -132,7 +129,7 @@ const submit = handleSubmit(async (values) => {
                         color="primary"
                         variant="outlined"
                         flat
-                        :text="$t('action.enter_passcode')"
+                        :text="$t('action.next')"
                         @click="formStep = steps[1]"
                       />
                     </div>

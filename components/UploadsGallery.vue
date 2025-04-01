@@ -46,13 +46,16 @@ const groupedUploads = computed(() => {
 </script>
 
 <template>
-  <div class="mb-20 flex flex-1 flex-col gap-2 px-2 py-2">
+  <div class="mb-20 flex flex-1 flex-col gap-2 px-4 py-2">
     <v-row>
       <v-col
         v-for="(upload) in groupedUploads"
         :key="upload.id"
-        class="p-1!"
+        class="mt-3! p-1!"
         cols="4"
+        md="3"
+        lg="2"
+        xl="2"
       >
         <uploads-gallery-item
 

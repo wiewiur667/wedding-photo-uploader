@@ -14,8 +14,7 @@ const userInitials = computed(() => {
   <v-app full-height>
     <v-app-bar
       app
-      class="app-bar__background__container px-3"
-      flat
+      class="bg-clip-padding px-3 text-white backdrop-blur-sm backdrop-filter bg-slate-700! bg-opacity-30!"
       scroll-behavior="hide"
     >
       <v-app-bar-title class="text-2xl font-thin!">
@@ -35,12 +34,12 @@ const userInitials = computed(() => {
       </template>
     </v-app-bar>
 
-    <v-main class="flex flex-col">
+    <v-main class="flex justify-center">
       <slot />
     </v-main>
     <div class="fixed bottom-0 left-0 right-0 flex items-center gap-3 p-3">
       <div
-        class="flex flex-1 items-center justify-between gap-3 border rounded-md bg-clip-padding p-3 backdrop-blur-sm backdrop-filter rounded-full! bg-gray-600! bg-opacity-20! text-white!"
+        class="flex flex-1 items-center justify-between gap-3 rounded-md bg-clip-padding p-3 backdrop-blur-sm backdrop-filter rounded-full! bg-white! text-black!"
       >
         <v-btn
           variant="tonal"

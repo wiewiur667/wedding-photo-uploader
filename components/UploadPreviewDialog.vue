@@ -6,7 +6,13 @@ import type { IUpload } from '~/code/interfaces/Upload.interface'
 import { defaultDateFormat } from '~/code/utils'
 
 const { upload } = defineProps<Props>()
-const emit = defineEmits(['close', 'next', 'prev', 'react'])
+const emit = defineEmits<{
+  (e: 'close', id: string): void
+  (e: 'next', id: string): void
+  (e: 'prev', id: string): void
+  (e: 'react', id: string): void
+  (e: 'remove', id: string): void
+}>()
 
 interface Props {
   upload: IUpload
@@ -32,18 +38,18 @@ async function download() {
 
 const reactionsRef = ref<typeof ReactionsView>()
 
-function openReactions() {
-  reactionsRef?.value?.open()
-}
+// function openReactions() {
+//   reactionsRef?.value?.open()
+// }
 
 const commentsRef = ref<typeof CommentsView>()
 
-function openComments() {
-  commentsRef?.value?.open()
-}
+// function openComments() {
+//   commentsRef?.value?.open()
+// }
 
 function closeDialog() {
-  emit('close')
+  emit('close', upload.id)
 }
 
 function acceptForGallery() {
@@ -76,7 +82,7 @@ async function remove() {
         icon
         density="compact"
         variant="flat"
-        @click="$emit('close', upload.id)"
+        @click="closeDialog"
       >
         <Icon name="mdi:close" />
       </v-btn>

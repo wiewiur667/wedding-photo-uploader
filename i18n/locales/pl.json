@@ -26,7 +26,8 @@
     "confirm": "Potwierdz",
     "cancel": "Anuluj",
     "back": "Wroc",
-    "upload_photos": "Dodaj zdjecia"
+    "upload_photos": "Dodaj zdjecia",
+    "next": "Nastepny krok"
   },
   "timeAgo": {
     "day": "Dzień | Dni",
