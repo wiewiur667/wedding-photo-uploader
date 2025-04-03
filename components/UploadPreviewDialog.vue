@@ -74,7 +74,7 @@ async function remove() {
 </script>
 
 <template>
-  <div class="grid grid-flow-row grid-rows-[min-content_1fr_min-content] bg-white/90 h-dvh">
+  <div class="grid grid-flow-row grid-rows-[min-content_1fr_min-content] h-full bg-white">
     <div class="mb-3 flex items-center justify-end gap-3 p-3">
       <v-btn
         color="error"
@@ -90,7 +90,7 @@ async function remove() {
     <div class="flex items-center justify-center p-3 min-h-0!">
       <img
         :src="`/api/uploads/${upload.id}`"
-        class="overflow-hidden object-contain object-center max-h-full! max-w-full! min-h-0! rounded-xl!"
+        class="overflow-hidden object-contain object-center max-h-full! max-w-full! min-h-0!"
         :alt="upload.name"
       >
     </div>

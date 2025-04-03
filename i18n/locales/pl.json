@@ -29,6 +29,16 @@
     "upload_photos": "Dodaj zdjecia",
     "next": "Nastepny krok"
   },
+  "input": {
+    "accessCode": {
+      "placeholder": "Podaj kod dostępu",
+      "label": "Kod dostępu"
+    },
+    "name": {
+      "label": "Imię i nazwisko",
+      "placeholder": "Podaj swoje imię i nazwisko"
+    }
+  },
   "timeAgo": {
     "day": "Dzień | Dni",
     "hour": "Godzinę | Godziny | Godzin",
@@ -47,5 +57,10 @@
   "delete": {
     "title": "Usun",
     "confirmation": "Czy jestes pewny ze chcesz to usunac?"
-  }
+  },
+  "error": {
+    "userAlreadyExists": "Użytkownik już istnieje",
+    "wrongAccessCode": "Nieprawidłowy kod dostępu"
+  },
+  "accessCodeIsRequired": "Kod dostępu jest wymagany do zalogowania się do aplikacji, możesz go znaleźć na winietce przy twoim siedzeniu"
 }

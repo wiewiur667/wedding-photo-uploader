@@ -1,4 +1,6 @@
 <script lang="ts" setup>
+import { Icon } from '#components'
+import { motion, useAnimate } from 'motion-v'
 import { vPress } from '~/code/utils'
 
 interface Props {
@@ -15,25 +17,56 @@ interface Props {
 defineProps<Props>()
 
 defineEmits(['open', 'react'])
+
+const [reactScope, animate] = useAnimate()
+const MotionIcon = motion.create(Icon)
+
+function animateIcon() {
+  animate(reactScope.value, {
+    scale: [1, 2, 1],
+  }, {
+    duration: 0.2,
+  })
+}
 </script>
 
 <template>
   <v-card
     v-press="{
-      click: () => $emit('open'),
-      dblclick: () => $emit('react'),
+      //click: () => $emit('open'),
+      dblclick: () => {
+        $emit('react')
+        animateIcon()
+      },
     }"
     flat
+    :rounded="false"
     class="relative touch-manipulation gap-1 overflow-hidden bg-transparent"
   >
     <v-img
       :src="`/api/uploads/${upload.id}`"
       :alt="upload.name"
-      :aspect-ratio="9 / 12"
+      :aspect-ratio="1"
       lazy-src="https://picsum.photos/id/11/100/60"
       cover
-      rounded="md"
+      class="pointer-events-none"
     >
+      <div
+        class="h-full flex items-end gap-2 text-white p-2!"
+      >
+        <div class="flex items-center gap-2 text-sm">
+          <Icon :name="upload.commentsCount ? 'mdi:comment' : 'mdi:comment-outline'" />
+          <span>{{ upload.commentsCount ?? 0 }}</span>
+        </div>
+        <div class="flex items-center gap-2 text-sm">
+          <MotionIcon
+            ref="reactScope"
+            :name="upload.reacted ? 'mdi:heart' : 'mdi:heart-outline'"
+            color="red"
+          />
+          <span>{{ upload.reactionsCount ?? 0 }}</span>
+        </div>
+      </div>
       <template #placeholder>
         <div class="h-full flex flex-1 items-center justify-center">
           <v-progress-circular
@@ -43,24 +76,6 @@ defineEmits(['open', 'react'])
         </div>
       </template>
     </v-img>
-    <v-card-text
-      class="flex flex-col justify-end p-2!"
-    >
-      <span class="font-semibold">{{ upload.byName }}</span>
-      <div class="flex gap-3">
-        <div class="flex items-center gap-2 text-sm">
-          <Icon :name="upload.commentsCount ? 'mdi:comment' : 'mdi:comment-outline'" />
-          <span>{{ upload.commentsCount ?? 0 }}</span>
-        </div>
-        <div class="flex items-center gap-2 text-sm">
-          <Icon
-            :name="upload.reacted ? 'mdi:heart' : 'mdi:heart-outline'"
-            color="red"
-          />
-          <span>{{ upload.reactionsCount ?? 0 }}</span>
-        </div>
-      </div>
-    </v-card-text>
   </v-card>
 </template>
 

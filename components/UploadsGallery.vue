@@ -1,9 +1,11 @@
 <script lang="ts" setup>
 import type { IUpload } from '~/code/interfaces/Upload.interface'
+import { UploadsGalleryItem } from '#components'
 import { uniqBy } from 'lodash-es'
+import { motion } from 'motion-v'
 
 const uploadsStore = useUploadsStore()
-const { uploads, uploadsLoading } = storeToRefs(uploadsStore)
+const { uploads, uploadsLoading, totalUploads } = storeToRefs(uploadsStore)
 
 await uploadsStore.getUploads()
 
@@ -39,61 +41,75 @@ async function reactToUpload(id: string) {
   await uploadsStore.updateInfo(id)
 }
 
+async function load(done: (state: string) => void) {
+  if (totalUploads?.value != null && uploads.value.length < totalUploads.value)
+    await uploadsStore.getUploads()
+  done('ok')
+}
+
 const groupedUploads = computed(() => {
   const uniqueItems = uniqBy(uploads.value, 'id')
   return uniqueItems
 })
+
+const MotionGalleryItem = motion.create(UploadsGalleryItem)
 </script>
 
 <template>
-  <div class="mb-20 flex flex-1 flex-col gap-2 px-4 py-2">
-    <v-row>
-      <v-col
-        v-for="(upload) in groupedUploads"
-        :key="upload.id"
-        class="mt-3! p-1!"
-        cols="4"
-        md="3"
-        lg="2"
-        xl="2"
+  <v-infinite-scroll
+    :items="groupedUploads"
+    @load="load"
+  >
+    <div class="mb-20 flex flex-1 flex-col gap-2 px-4 py-1">
+      <v-row>
+        <v-col
+          v-for="(upload) in groupedUploads"
+          :key="upload.id"
+          class="p-[0.125rem]!"
+          cols="4"
+          md="3"
+          lg="2"
+          xl="2"
+        >
+          <MotionGalleryItem
+            :while-press="{ scale: 0.95 }"
+            :transition="{ type: 'spring', duration: 0.2 }"
+            :upload="upload"
+            @open="() => previewUpload(upload)"
+            @react="() => reactToUpload(upload.id)"
+          />
+        </v-col>
+      </v-row>
+      <v-dialog
+        v-model="previewDialog.open"
+        fullscreen
       >
-        <uploads-gallery-item
-
-          :upload="upload"
-          @open="() => previewUpload(upload)"
-          @react="() => reactToUpload(upload.id)"
+        <upload-preview-dialog
+          v-if="previewDialog.selected"
+          v-touch="{
+            down: () => previewDialog.open = false,
+          }"
+          :upload="previewDialog.selected"
+          class="touch-manipulation!"
+          @close="(id) => onDialogClose(id)"
+          @react="(id) => reactToUpload(id)"
+          @remove="async (id) => {
+            await uploadsStore.removeUpload(id)
+            previewDialog.open = false
+          }"
         />
-      </v-col>
-    </v-row>
-    <v-dialog
-      v-model="previewDialog.open"
-      fullscreen
-    >
-      <upload-preview-dialog
-        v-if="previewDialog.selected"
-        v-touch="{
-          down: () => previewDialog.open = false,
-        }"
-        :upload="previewDialog.selected"
-        class="touch-manipulation!"
-        @close="(id) => onDialogClose(id)"
-        @react="(id) => reactToUpload(id)"
-        @remove="async (id) => {
-          await uploadsStore.removeUpload(id)
-          previewDialog.open = false
-        }"
-      />
-    </v-dialog>
+      </v-dialog>
 
-    <v-overlay
-      :model-value="uploadsLoading"
-      class="items-center justify-center"
-    >
-      <v-progress-circular
-        color="primary"
-        size="64"
-        indeterminate
-      />
-    </v-overlay>
-  </div>
+      <v-overlay
+        :model-value="uploadsLoading"
+        class="items-center justify-center"
+      >
+        <v-progress-circular
+          color="primary"
+          size="64"
+          indeterminate
+        />
+      </v-overlay>
+    </div>
+  </v-infinite-scroll>
 </template>

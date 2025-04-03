@@ -125,7 +125,7 @@ const commentsList = computed(() => {
             <div
               class="flex flex-col items-start gap-1 px-2 py-1 font-thin"
             >
-              <div class="round flex items-center gap-3 rounded-lg bg-gray-100 p-2">
+              <div class="round flex items-center gap-3 rounded-lg bg-gray-50 p-2">
                 <div class="flex flex-col gap-1">
                   <span class="text-xs font-bold!">{{ comment!.userName }}</span>
                   <span>{{ comment.comment }}</span>

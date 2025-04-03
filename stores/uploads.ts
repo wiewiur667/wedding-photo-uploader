@@ -8,7 +8,7 @@ export const useUploadsStore = defineStore('uploads', () => {
   const uploads = ref<IUpload[]>([])
   const totalUploads = ref<number>(0)
 
-  const limit = ref(50)
+  const limit = ref(10)
   const offset = ref(0)
 
   const { execute: _getUploads, status, data: uploadsData, refresh } = getPagedData<{
@@ -20,7 +20,7 @@ export const useUploadsStore = defineStore('uploads', () => {
     reacted: boolean
     userName: string
     timestamp: number
-  }>('uploads', `api/uploads`, offset.value, limit.value)
+  }>('uploads', `api/uploads`, offset, limit)
 
   watch(uploadsData, (uploadDataValue) => {
     if (!uploadDataValue)
@@ -87,6 +87,7 @@ export const useUploadsStore = defineStore('uploads', () => {
   return {
     uploadsLoading,
     getUploads,
+    totalUploads,
     removeUpload,
     uploads,
     updateInfo,

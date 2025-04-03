@@ -20,6 +20,8 @@ const { handleSubmit, meta } = useForm({
     },
   },
 })
+const { t } = useI18n()
+
 const route = useRoute()
 const { fetch: refreshSession } = useUserSession()
 const routeCode = route.query.code as string | undefined
@@ -51,11 +53,12 @@ const submit = handleSubmit(async (values) => {
     catch (error) {
       if (error instanceof FetchError) {
         if (error.statusCode === 409) {
-          name.setErrors(['Użytkownik o podanej nazwie już istnieje'])
+          name.setErrors([t('error.userAlreadyExists')])
+          formStep.value = steps[0]
           return
         }
         if (error.statusCode === 401) {
-          code.setErrors('Nieprawidłowy kod dostępu')
+          code.setErrors(t('error.wrongAccessCode'))
         }
       }
       else {
@@ -73,7 +76,7 @@ const submit = handleSubmit(async (values) => {
       class="z-1"
     />
     <div class="z-2 flex flex-1 flex-col justify-center gap-4">
-      <div class="flex flex-col items-center gap-3 text-center text-4xl font-bold">
+      <div class="flex flex-col items-center gap-3 text-center text-4xl tracking-tight">
         <span> Witamy na weselu</span>
         <span>Klaudii i Sebastiana</span>
       </div>
@@ -110,7 +113,7 @@ const submit = handleSubmit(async (values) => {
                       v-model="name.value.value"
                       type="string"
                       autocomplete="name"
-                      label="Imię i nazwisko"
+                      :label="$t('input.name.label')"
                       variant="outlined"
                       density="comfortable"
                       width="100%"
@@ -118,7 +121,7 @@ const submit = handleSubmit(async (values) => {
                       block
                       rounded="lg"
 
-                      placeholder="Podaj swoje imię i nazwisko"
+                      :placeholder="$t('input.name.placeholder')"
                       :error="name.meta.dirty && !name.meta.valid"
                       :error-messages="name.errors.value"
                     />
@@ -137,8 +140,7 @@ const submit = handleSubmit(async (values) => {
                 </v-stepper-window-item>
                 <v-stepper-window-item :value="steps[1]">
                   <div class="flex flex-col gap-3">
-                    <span class="text-xs text-gray-500">
-                      Kod dostępu jest wymagany do zalogowania się do aplikacji, możesz go znaleźć na winietce przy twoim siedzeniu</span>
+                    <span class="text-xs text-gray-500">{{ $t('accessCodeIsRequired') }}</span>
                     <v-text-field
                       v-model.trim="code.value.value"
                       type="number"
@@ -152,8 +154,8 @@ const submit = handleSubmit(async (values) => {
                       :disabled="!!routeCode"
                       :error="code.meta.dirty && !code.meta.valid"
                       :error-messages="code.errors.value"
-                      placeholder="Podaj kod dostępu"
-                      label="Kod dostępu"
+                      :placeholder="$t('input.accessCode.placeholder')"
+                      :label="$t('input.accessCode.label')"
                     />
                     <div class="flex">
                       <v-btn

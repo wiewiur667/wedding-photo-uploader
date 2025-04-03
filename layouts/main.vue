@@ -1,6 +1,4 @@
 <script setup lang="ts">
-const { mobile } = useDisplay()
-
 const userStore = useUserStore()
 const { userName, isAdmin } = storeToRefs(userStore)
 
@@ -14,8 +12,9 @@ const userInitials = computed(() => {
   <v-app full-height>
     <v-app-bar
       app
-      class="bg-clip-padding px-3 text-white backdrop-blur-sm backdrop-filter bg-slate-700! bg-opacity-30!"
+      class="text-gray-800!"
       scroll-behavior="hide"
+      flat
     >
       <v-app-bar-title class="text-2xl font-thin!">
         Klaudia i Sebastian
@@ -28,7 +27,7 @@ const userInitials = computed(() => {
           class="text-yellow-500"
           title="Admin"
         />
-        <v-chip class="ml-2">
+        <v-chip class="ml-2 mr-1">
           {{ userInitials }}
         </v-chip>
       </template>
@@ -37,53 +36,41 @@ const userInitials = computed(() => {
     <v-main class="flex justify-center">
       <slot />
     </v-main>
-    <div class="fixed bottom-0 left-0 right-0 flex items-center gap-3 p-3">
+    <div class="fixed bottom-0 left-0 right-0 flex items-center gap-3 bg-gray-800 p-3 py-1">
       <div
-        class="flex flex-1 items-center justify-between gap-3 rounded-md bg-clip-padding p-3 backdrop-blur-sm backdrop-filter rounded-full! bg-white! text-black!"
+        class="flex flex-1 items-center justify-between gap-3 rounded-md bg-clip-padding px-3 backdrop-blur-sm backdrop-filter rounded-full! text-black!"
       >
         <v-btn
-          variant="tonal"
+          variant="plain"
+          :ripple="false"
+          color="white"
           class="text-none"
           to="/"
-          rounded
-        >
-          <div class="flex gap-2">
-            <v-icon icon="mdi-home" />
-            <span v-if="!mobile">Home</span>
-          </div>
-        </v-btn>
+          icon="mdi-home"
+        />
         <v-btn
-          variant="tonal"
+          variant="plain"
+          :ripple="false"
+          color="white"
           class="text-none"
           to="/menu"
-          rounded
-        >
-          <div class="flex gap-2">
-            <v-icon icon="mdi-book-open-page-variant" />
-            <span v-if="!mobile">Menu</span>
-          </div>
-        </v-btn>
+          icon="mdi-book-open-page-variant"
+        />
         <v-btn
-          variant="tonal"
+          variant="plain"
+          :ripple="false"
+          color="white"
           class="text-none"
-          rounded
-        >
-          <div class="flex gap-2">
-            <v-icon icon="mdi-book-outline" />
-            <span v-if="!mobile">Plan</span>
-          </div>
-        </v-btn>
+          icon="mdi-book-outline"
+        />
         <v-btn
-          variant="tonal"
+          variant="plain"
+          :ripple="false"
+          color="white"
           class="text-none"
-          rounded
+          icon="mdi-image-multiple"
           to="/gallery"
-        >
-          <div class="flex gap-2">
-            <v-icon icon="mdi-camera" />
-            <span v-if="!mobile">Galeria</span>
-          </div>
-        </v-btn>
+        />
       </div>
       <w-upload />
     </div>

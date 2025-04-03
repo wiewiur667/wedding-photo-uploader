@@ -19,7 +19,7 @@ export default defineNuxtConfig({
     'pinia-plugin-persistedstate/nuxt',
     '@vee-validate/nuxt',
     'vuetify-nuxt-module',
-
+    'motion-v/nuxt',
   ],
 
   ssr: false,

@@ -8,7 +8,7 @@ const slideGroupModel = ref(0)
 
 <template>
   <v-sheet
-    class="flex flex-none bg-gray-100!"
+    class="flex flex-none bg-gray-50!"
   >
     <v-slide-group
       v-model="slideGroupModel"

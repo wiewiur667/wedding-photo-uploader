@@ -9,17 +9,17 @@ const { uploads } = storeToRefs(uploadsStore)
 </script>
 
 <template>
-  <div class="flex flex-1 flex-col gap-3 bg-gray-100">
+  <div class="flex flex-1 flex-col gap-3 bg-gray-50">
     <!-- Top photos -->
     <v-img
-      :src="`/api/uploads/${uploads.at(13)?.id}`"
+      :src="`/api/uploads/${uploads.at(0)?.id}`"
       width="100%"
       height="300"
       cover
     >
-      <div class="absolute bottom-0 left-0 right-0 h-30 min-h-10 flex flex-col justify-end gap-3 from-gray-100 via-gray-100 to-gray-100/0 bg-gradient-to-t" />
+      <div class="absolute bottom-0 left-0 right-0 min-h-30 flex flex-col justify-end gap-3 from-gray-50 to-gray-50/0 bg-gradient-to-t" />
     </v-img>
-    <div class="py-12 pt-1 text-center text-3xl">
+    <div class="py-16 pt-2 text-center text-3xl tracking-tight">
       Galeria zdjec
     </div>
     <w-albums />
