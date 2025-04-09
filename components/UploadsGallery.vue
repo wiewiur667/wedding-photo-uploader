@@ -28,17 +28,13 @@ function onDialogClose(id: string) {
   uploadsStore.updateInfo(id)
 }
 
-async function reactToUpload(id: string) {
-  const upload = uploads.value.find(upload => upload.id === id)
-  if (!upload)
-    return
-
+async function reactToUpload(upload: IUpload) {
   const reaction = upload?.reacted ? 'dislike' : 'like'
-  await $fetch(`/api/uploads/${id}/reaction?reaction=${reaction}`, {
+  await $fetch(`/api/uploads/${upload.id}/reaction?reaction=${reaction}`, {
     method: 'POST',
   })
 
-  await uploadsStore.updateInfo(id)
+  await uploadsStore.updateInfo(upload.id)
 }
 
 async function load(done: (state: string) => void) {
@@ -76,29 +72,25 @@ const MotionGalleryItem = motion.create(UploadsGalleryItem)
             :transition="{ type: 'spring', duration: 0.2 }"
             :upload="upload"
             @open="() => previewUpload(upload)"
-            @react="() => reactToUpload(upload.id)"
+            @react="() => reactToUpload(upload)"
           />
         </v-col>
       </v-row>
-      <v-dialog
+      <upload-preview-dialog
+        v-if="previewDialog.selected"
         v-model="previewDialog.open"
-        fullscreen
-      >
-        <upload-preview-dialog
-          v-if="previewDialog.selected"
-          v-touch="{
-            down: () => previewDialog.open = false,
-          }"
-          :upload="previewDialog.selected"
-          class="touch-manipulation!"
-          @close="(id) => onDialogClose(id)"
-          @react="(id) => reactToUpload(id)"
-          @remove="async (id) => {
-            await uploadsStore.removeUpload(id)
-            previewDialog.open = false
-          }"
-        />
-      </v-dialog>
+        v-touch="{
+          down: () => previewDialog.open = false,
+        }"
+        :upload="previewDialog.selected"
+        class="touch-manipulation!"
+        @close="(id: string) => onDialogClose(id)"
+        @react="(upload: IUpload) => reactToUpload(upload)"
+        @remove="async (id: string) => {
+          await uploadsStore.removeUpload(id)
+          previewDialog.open = false
+        }"
+      />
 
       <v-overlay
         :model-value="uploadsLoading"

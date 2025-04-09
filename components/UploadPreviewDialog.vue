@@ -7,12 +7,16 @@ import { defaultDateFormat } from '~/code/utils'
 
 const { upload } = defineProps<Props>()
 const emit = defineEmits<{
-  (e: 'close', id: string): void
-  (e: 'next', id: string): void
-  (e: 'prev', id: string): void
-  (e: 'react', id: string): void
-  (e: 'remove', id: string): void
+  close: [id: string]
+  next: [id: string]
+  prev: [id: string]
+  react: [upload: IUpload]
+  remove: [id: string]
 }>()
+
+const dialogOpen = defineModel({
+  default: false,
+})
 
 interface Props {
   upload: IUpload
@@ -74,111 +78,116 @@ async function remove() {
 </script>
 
 <template>
-  <div class="grid grid-flow-row grid-rows-[min-content_1fr_min-content] h-full bg-white">
-    <div class="mb-3 flex items-center justify-end gap-3 p-3">
-      <v-btn
-        color="error"
-        flat
-        icon
-        density="compact"
-        variant="flat"
-        @click="closeDialog"
-      >
-        <Icon name="mdi:close" />
-      </v-btn>
-    </div>
-    <div class="flex items-center justify-center p-3 min-h-0!">
-      <img
-        :src="`/api/uploads/${upload.id}`"
-        class="overflow-hidden object-contain object-center max-h-full! max-w-full! min-h-0!"
-        :alt="upload.name"
-      >
-    </div>
-    <div class="mt-3 flex flex-col">
-      <div class="flex items-center justify-end gap-3 p-3 text-xs text-slate-900">
-        <span class="text-xs">{{ upload.created.toFormat(defaultDateFormat) }} {{ upload.byName }}</span>
-      </div>
-      <div
-        class="flex items-center justify-between gap-3 overflow-auto bg-gray-800 p-4 text-white"
-      >
-        <reactions-view
-          ref="reactionsRef"
-          :target-id="upload.id"
-          :reacted="upload.reacted"
-          @react="$emit('react', upload.id)"
-        />
-        <comments-view
-          ref="commentsRef"
-          :target-id="upload.id"
-        />
+  <v-dialog
+    v-model="dialogOpen"
+    fullscreen
+  >
+    <div class="grid grid-flow-row grid-rows-[min-content_1fr_min-content] h-full bg-white">
+      <div class="mb-3 flex items-center justify-end gap-3 p-3">
         <v-btn
+          color="error"
           flat
-          size="small"
-          variant="text"
-          :text="$t('action.download')"
-          prepend-icon="mdi-download-outline"
-          @click="download"
-        />
+          icon
+          density="compact"
+          variant="flat"
+          @click="closeDialog"
+        >
+          <Icon name="mdi:close" />
+        </v-btn>
+      </div>
+      <div class="flex items-center justify-center p-3 min-h-0!">
+        <img
+          :src="`/api/uploads/${upload.id}`"
+          class="overflow-hidden object-contain object-center max-h-full! max-w-full! min-h-0!"
+          :alt="upload.name"
+        >
+      </div>
+      <div class="mt-3 flex flex-col">
+        <div class="flex items-center justify-end gap-3 p-3 text-xs text-slate-900">
+          <span class="text-xs">{{ upload.created.toFormat(defaultDateFormat) }} {{ upload.byName }}</span>
+        </div>
+        <div
+          class="flex items-center justify-between gap-3 overflow-auto bg-gray-800 p-4 text-white"
+        >
+          <reactions-view
+            ref="reactionsRef"
+            :target-id="upload.id"
+            :reacted="upload.reacted"
+            @react="$emit('react', upload)"
+          />
+          <comments-view
+            ref="commentsRef"
+            :target-id="upload.id"
+          />
+          <v-btn
+            flat
+            size="small"
+            variant="text"
+            :text="$t('action.download')"
+            prepend-icon="mdi-download-outline"
+            @click="download"
+          />
 
-        <!-- Accept for gallery -->
-        <v-dialog v-if="isAdmin">
-          <template #activator="{ props }">
-            <v-btn
-              v-bind="props"
-              flat
-              size="small"
-              variant="text"
-              :text="$t('action.acceptForGallery')"
-              prepend-icon="mdi-check"
-            />
-          </template>
-          <v-card>
-            <v-card-title>{{ $t('acceptForGallery.title') }}</v-card-title>
-            <v-card-text>{{ $t('acceptForGallery.confirmation') }}</v-card-text>
-            <v-card-actions>
+          <!-- Accept for gallery -->
+          <v-dialog v-if="isAdmin">
+            <template #activator="{ props }">
               <v-btn
-                color="primary"
-                @click="acceptForGallery"
-              >
-                {{ $t('action.confirm') }}
-              </v-btn>
-              <v-btn @click="closeDialog">
-                {{ $t('action.cancel') }}
-              </v-btn>
-            </v-card-actions>
-          </v-card>
-        </v-dialog>
+                v-bind="props"
+                flat
+                size="small"
+                variant="text"
+                :text="$t('action.acceptForGallery')"
+                prepend-icon="mdi-check"
+              />
+            </template>
+            <v-card>
+              <v-card-title>{{ $t('acceptForGallery.title') }}</v-card-title>
+              <v-card-text>{{ $t('acceptForGallery.confirmation') }}</v-card-text>
+              <v-card-actions>
+                <v-btn
+                  color="primary"
+                  @click="acceptForGallery"
+                >
+                  {{ $t('action.confirm') }}
+                </v-btn>
+                <v-btn @click="closeDialog">
+                  {{ $t('action.cancel') }}
+                </v-btn>
+              </v-card-actions>
+            </v-card>
+          </v-dialog>
 
-        <!-- Delete -->
-        <v-dialog v-if="upload.isOwner || isAdmin">
-          <template #activator="{ props }">
-            <v-btn
-              v-bind="props"
-              flat
-              size="small"
-              variant="text"
-              :text="$t('action.delete')"
-              prepend-icon="mdi-bin-outline"
-            />
-          </template>
-          <v-card>
-            <v-card-title>{{ $t('delete.title') }}</v-card-title>
-            <v-card-text>{{ $t('delete.confirmation') }}</v-card-text>
-            <v-card-actions>
+          <!-- Delete -->
+          <v-dialog v-if="upload.isOwner || isAdmin">
+            <template #activator="{ props }">
               <v-btn
-                color="primary"
-                :loading="removing"
-                @click="remove()"
-              >
-                {{ $t('action.confirm') }}
-              </v-btn>
-              <v-btn @click="closeDialog">
-                {{ $t('action.cancel') }}
-              </v-btn>
-            </v-card-actions>
-          </v-card>
-        </v-dialog>
+                v-bind="props"
+                flat
+                size="small"
+                variant="text"
+                :text="$t('action.delete')"
+                prepend-icon="mdi-bin-outline"
+              />
+            </template>
+            <v-card>
+              <v-card-title>{{ $t('delete.title') }}</v-card-title>
+              <v-card-text>{{ $t('delete.confirmation') }}</v-card-text>
+              <v-card-actions>
+                <v-btn
+                  color="primary"
+                  :loading="removing"
+                  @click="remove()"
+                >
+                  {{ $t('action.confirm') }}
+                </v-btn>
+                <v-btn @click="closeDialog">
+                  {{ $t('action.cancel') }}
+                </v-btn>
+              </v-card-actions>
+            </v-card>
+          </v-dialog>
+        </div>
       </div>
     </div>
-  </div>
+  </v-dialog>
 </template>

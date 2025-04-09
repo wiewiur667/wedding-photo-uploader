@@ -1,22 +1,18 @@
 <script lang="ts" setup>
+import type { IUpload } from '~/code/interfaces/Upload.interface'
 import { Icon } from '#components'
 import { motion, useAnimate } from 'motion-v'
 import { vPress } from '~/code/utils'
 
 interface Props {
-  upload: {
-    id: string
-    type: string
-    name: string
-    commentsCount?: number
-    reactionsCount?: number
-    reacted?: boolean
-    byName: string
-  }
+  upload: IUpload
 }
 defineProps<Props>()
 
-defineEmits(['open', 'react'])
+defineEmits<{
+  open: []
+  react: [upload: IUpload]
+}>()
 
 const [reactScope, animate] = useAnimate()
 const MotionIcon = motion.create(Icon)
@@ -33,9 +29,9 @@ function animateIcon() {
 <template>
   <v-card
     v-press="{
-      //click: () => $emit('open'),
+      click: () => $emit('open'),
       dblclick: () => {
-        $emit('react')
+        $emit('react', upload)
         animateIcon()
       },
     }"
