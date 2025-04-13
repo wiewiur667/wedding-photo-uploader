@@ -1,7 +1,11 @@
 {
-  "trocheTuPusto": "Trochę tu pusto, bądź pierwszy i dodaj coś nowego!",
-  "skomentuj": "Skomentuj",
-  "komentarz": "Komentarz | Komentarze",
+  "pages": {
+    "gallery": {
+      "title": "Galeria zdjęć",
+      "empty": "Nie ma więcej zdjęć"
+    }
+  },
+  "comment": "Komentarz | Komentarze",
   "validation": {
     "comment": {
       "isRequired": "Komentarz nie może być pusty"
@@ -27,7 +31,8 @@
     "cancel": "Anuluj",
     "back": "Wroc",
     "upload_photos": "Dodaj zdjecia",
-    "next": "Nastepny krok"
+    "next": "Nastepny krok",
+    "refresh": "Odśwież"
   },
   "input": {
     "accessCode": {

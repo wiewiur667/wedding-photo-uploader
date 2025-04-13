@@ -59,5 +59,7 @@ export default defineEventHandler(async (event) => {
     }
   }
 
-  return {}
+  const totalReactions = await db.$count(reactionTable, eq(reactionTable.fk_upload_id, id))
+
+  return totalReactions
 })

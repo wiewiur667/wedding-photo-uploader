@@ -1,4 +1,4 @@
-export interface IPagedResult<T> {
+export interface IOffsetResult<T> {
   rows: T[]
   total: number
   limit: number

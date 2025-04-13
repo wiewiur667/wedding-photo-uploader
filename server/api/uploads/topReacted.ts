@@ -3,32 +3,15 @@ import { db } from '~/db'
 import { comment, galleryApproval, reaction, upload as uploadTable, user as userTable } from '~/db/schema'
 
 export default defineEventHandler(async (event) => {
-  const { user } = await requireUserSession(event)
-
-  const query = getQuery(event)
-  const limitVal = Number.parseInt(query?.limit as string ?? '10')
-  const offsetVal = Number.parseInt(query?.offset as string ?? '0')
-  const userId = query?.userId as string
-
-  const body = await readBody(event)
+  await requireUserSession(event)
 
   try {
-    const uploadsCount = userId ? db.$count(uploadTable, eq(uploadTable.fk_user_id, userId ?? null)) : db.$count(uploadTable)
-
     const uploadsQuery = db
       .select({
         id: uploadTable.id,
         name: uploadTable.name,
-        mimetype: uploadTable.mime_type,
         commentsCount: db.$count(comment, and(eq(comment.fk_upload_id, uploadTable.id))),
         reactionsCount: db.$count(reaction, and(eq(reaction.fk_upload_id, uploadTable.id))),
-        reacted: exists(
-          db
-            .select()
-            .from(reaction)
-            .where(and(eq(reaction.fk_upload_id, uploadTable.id), eq(reaction.fk_user_id, user.id))),
-        ),
-        isOwner: eq(uploadTable.fk_user_id, user.id),
         created: uploadTable.created,
         userName: userTable.name,
         approvedForGallery: galleryApproval.approved,
@@ -37,36 +20,21 @@ export default defineEventHandler(async (event) => {
       .leftJoin(userTable, eq(userTable.id, uploadTable.fk_user_id))
       .leftJoin(galleryApproval, eq(galleryApproval.fk_upload_id, uploadTable.id))
       .groupBy(uploadTable.id)
-      .orderBy(desc(uploadTable.created))
-      .limit(limitVal)
-      .offset(offsetVal)
+      .limit(10)
+      .as('uploads')
 
-    if (userId)
-      uploadsQuery.where(eq(uploadTable.fk_user_id, userId))
-
-    if (body?.ids)
-      uploadsQuery.where(inArray(uploadTable.id, []))
-
-    const topUploads = await uploadsQuery
+    const topUploads = await db.select().from(uploadsQuery).orderBy(desc(uploadsQuery.reactionsCount))
     const toUploadsData = (topUploads ?? []).map(row => ({
       id: row.id,
       name: row.name,
-      mimeType: row.mimetype,
       commentsCount: row.commentsCount ?? 0,
       reactionsCount: row.reactionsCount ?? 0,
-      reacted: !!row.reacted,
-      isOwner: !!row.isOwner,
       userName: row.userName,
       created: row.created,
       approvedForGallery: row.approvedForGallery ?? false,
     }))
 
-    return {
-      rows: toUploadsData,
-      total: await uploadsCount,
-      limit: limitVal,
-      offset: offsetVal,
-    }
+    return toUploadsData
   }
   catch (error) {
     console.error(error)

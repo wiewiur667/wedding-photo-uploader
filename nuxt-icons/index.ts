@@ -2,58 +2,53 @@ import type { IconAliases, IconSet } from 'vuetify'
 import { Icon } from '#components'
 
 export const aliases = <IconAliases>{
-  email: 'i-mdi:calendar',
-  collapse: 'i-mdi:chevron-up',
-  complete: 'i-mdi:check',
-  cancel: 'i-mdi:close-circle',
-  close: 'i-mdi:close',
-  delete: 'i-mdi:close-circle',
+  email: 'mdi:calendar',
+  collapse: 'mdi:chevron-up',
+  complete: 'mdi:check',
+  cancel: 'mdi:close-circle',
+  close: 'mdi:close',
+  delete: 'mdi:close-circle',
   // delete (e.g. v-chip close)
-  clear: 'i-mdi:close-circle',
-  success: 'i-mdi:check-circle',
-  info: 'i-mdi:information',
-  warning: 'i-mdi:alert-circle',
-  error: 'i-mdi:close-circle',
-  prev: 'i-mdi:chevron-left',
-  next: 'i-mdi:chevron-right',
-  checkboxOn: 'i-mdi:checkbox-marked',
-  checkboxOff: 'i-mdi:checkbox-blank-outline',
-  checkboxIndeterminate: 'i-mdi:minus-box',
-  delimiter: 'i-mdi:circle',
+  clear: 'mdi:close-circle',
+  success: 'mdi:check-circle',
+  info: 'mdi:information',
+  warning: 'mdi:alert-circle',
+  error: 'mdi:close-circle',
+  prev: 'mdi:chevron-left',
+  next: 'mdi:chevron-right',
+  checkboxOn: 'mdi:checkbox-marked',
+  checkboxOff: 'mdi:checkbox-blank-outline',
+  checkboxIndeterminate: 'mdi:minus-box',
+  delimiter: 'mdi:circle',
   // for carousel
-  sortAsc: 'i-mdi:arrow-up',
-  sortDesc: 'i-mdi:arrow-down',
-  expand: 'i-mdi:chevron-down',
-  menu: 'i-mdi:menu',
-  subgroup: 'i-mdi:menu-down',
-  dropdown: 'i-mdi:menu-down',
-  radioOn: 'i-mdi:radiobox-marked',
-  radioOff: 'i-mdi:radiobox-blank',
-  edit: 'i-mdi:pencil',
-  ratingEmpty: 'i-mdi:star-outline',
-  ratingFull: 'i-mdi:star',
-  ratingHalf: 'i-mdi:star-half-full',
-  loading: 'i-mdi:cached',
-  first: 'i-mdi:page-first',
-  last: 'i-mdi:page-last',
-  unfold: 'i-mdi:unfold-more-horizontal',
-  file: 'i-mdi:paperclip',
-  plus: 'i-mdi:plus',
-  minus: 'i-mdi:minus',
-  calendar: 'i-mdi:calendar',
+  sortAsc: 'mdi:arrow-up',
+  sortDesc: 'mdi:arrow-down',
+  expand: 'mdi:chevron-down',
+  menu: 'mdi:menu',
+  subgroup: 'mdi:menu-down',
+  dropdown: 'mdi:menu-down',
+  radioOn: 'mdi:radiobox-marked',
+  radioOff: 'mdi:radiobox-blank',
+  edit: 'mdi:pencil',
+  ratingEmpty: 'mdi:star-outline',
+  ratingFull: 'mdi:star',
+  ratingHalf: 'mdi:star-half-full',
+  loading: 'mdi:cached',
+  first: 'mdi:page-first',
+  last: 'mdi:page-last',
+  unfold: 'mdi:unfold-more-horizontal',
+  file: 'mdi:paperclip',
+  plus: 'mdi:plus',
+  minus: 'mdi:minus',
+  calendar: 'mdi:calendar',
 }
 
-export function nuxtIcon(): IconSet {
-  const component = Icon
-  return {
-    component: (props) => {
-      const { icon, tag, ...rest } = props
-      return h(tag, rest, [
-        h(component, {
-          name: aliases[icon as string] ?? icon as string,
-          ...rest,
-        }),
-      ])
-    },
-  } satisfies IconSet
+export const custom: IconSet = {
+  component: (props) => {
+    const { icon, tag, ...rest } = props
+    return h(Icon, {
+      name: aliases[icon as string] ?? icon as string,
+      ...rest,
+    })
+  },
 }

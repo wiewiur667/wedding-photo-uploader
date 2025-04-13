@@ -8,6 +8,7 @@ export default defineEventHandler(async (event) => {
   const topQuery = db
     .select({
       id: uploadTable.id,
+      userId: uploadTable.fk_user_id,
       userName: userTable.name,
     })
     .from(uploadTable)
@@ -15,7 +16,7 @@ export default defineEventHandler(async (event) => {
     .orderBy(desc(uploadTable.created))
     .as('topQuery')
 
-  const albumsQuery = await db.select().from(topQuery).groupBy(topQuery.userName)
+  const albumsQuery = await db.select().from(topQuery).groupBy(topQuery.userId)
 
   return albumsQuery
 })

@@ -3,7 +3,7 @@ import { db } from '~/db'
 import { upload as uploadTable } from '~/db/schema'
 
 export default defineEventHandler(async (event) => {
-  const user = await getUserSession(event)
+  const user = await requireUserSession(event)
   if (!user || !user.user?.is_admin) {
     setResponseStatus(event, 401, 'Unauthorized')
     return

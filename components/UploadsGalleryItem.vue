@@ -14,11 +14,12 @@ defineEmits<{
   react: [upload: IUpload]
 }>()
 
-const [reactScope, animate] = useAnimate()
+const [iconScope, animate] = useAnimate()
 const MotionIcon = motion.create(Icon)
+const { react } = useUploads()
 
 function animateIcon() {
-  animate(reactScope.value, {
+  animate(iconScope.value, {
     scale: [1, 2, 1],
   }, {
     duration: 0.2,
@@ -30,8 +31,8 @@ function animateIcon() {
   <v-card
     v-press="{
       click: () => $emit('open'),
-      dblclick: () => {
-        $emit('react', upload)
+      dblclick: async () => {
+        upload.reactionsCount = await react(upload.id, 'like')
         animateIcon()
       },
     }"
@@ -43,7 +44,6 @@ function animateIcon() {
       :src="`/api/uploads/${upload.id}`"
       :alt="upload.name"
       :aspect-ratio="1"
-      lazy-src="https://picsum.photos/id/11/100/60"
       cover
       class="pointer-events-none"
     >
@@ -51,14 +51,10 @@ function animateIcon() {
         class="h-full flex items-end gap-2 text-white p-2!"
       >
         <div class="flex items-center gap-2 text-sm">
-          <Icon :name="upload.commentsCount ? 'mdi:comment' : 'mdi:comment-outline'" />
-          <span>{{ upload.commentsCount ?? 0 }}</span>
-        </div>
-        <div class="flex items-center gap-2 text-sm">
           <MotionIcon
-            ref="reactScope"
+            ref="iconScope"
             :name="upload.reacted ? 'mdi:heart' : 'mdi:heart-outline'"
-            color="red"
+            class="text-red"
           />
           <span>{{ upload.reactionsCount ?? 0 }}</span>
         </div>

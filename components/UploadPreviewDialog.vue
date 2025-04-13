@@ -23,7 +23,7 @@ interface Props {
 }
 
 const { isAdmin } = storeToRefs(useUserStore())
-const { removeUpload } = useUploadsStore()
+const { removeUpload, react } = useUploads()
 
 async function download() {
   const u = await $fetch(`/api/uploads/${upload.id}`, {
@@ -113,7 +113,7 @@ async function remove() {
             ref="reactionsRef"
             :target-id="upload.id"
             :reacted="upload.reacted"
-            @react="$emit('react', upload)"
+            @react="react(upload.id, upload.reacted ? 'dislike' : 'like')"
           />
           <comments-view
             ref="commentsRef"

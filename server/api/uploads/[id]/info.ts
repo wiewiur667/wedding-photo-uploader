@@ -37,8 +37,8 @@ export default defineEventHandler(async (event) => {
       .groupBy(uploadTable.id)
       .where(eq(uploadTable.id, id))
 
-    const result = (await upload)[0]
-    return { ...result, reacted: !!result.reacted } as IUploadInfo
+    const result = (await upload).at(0)
+    return { ...result, reacted: !!result?.reacted } as IUploadInfo
   }
   catch (error) {
     console.error(error)

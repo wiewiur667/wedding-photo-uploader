@@ -1,14 +1,19 @@
 <script lang="ts" setup>
-import { useFileDialog } from '@vueuse/core'
 import ExifReader from 'exifreader'
 import { DateTime } from 'luxon'
 import { generateThumbnail } from '~/code/utils'
 
 const dialogVisibleModel = ref(false)
 
+const { refreshGallery } = useUploads()
+
 const { open, onChange, onCancel } = useFileDialog({
   accept: 'image/jpeg,image/heic,image/heif,image/png', // Set to accept only image files
   reset: true,
+})
+
+defineExpose({
+  open,
 })
 
 interface ImageData {
@@ -101,7 +106,9 @@ async function uploadFiles() {
 
     resultSnackbarVisible.value = true
     dialogVisibleModel.value = false
-    refreshNuxtData('uploads')
+
+    if (typeof refreshGallery === 'function') // Check if refreshGallery is defined
+      refreshGallery()
   }
   catch (e) {
     console.error(e)
@@ -124,7 +131,7 @@ async function uploadFiles() {
       <v-btn
         variant="text"
         class="text-white!"
-        icon="mdi-camera-plus"
+        icon="mdi:camera-plus"
         @click="() => {
           open()
         }"

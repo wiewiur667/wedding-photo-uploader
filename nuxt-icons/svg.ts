@@ -1,13 +1,10 @@
 import type { IconOptions } from 'vuetify'
-import { aliases, nuxtIcon } from './'
-
-const defaultSet = 'custom'
-const svgNuxtIcon = nuxtIcon()
+import { aliases, custom } from './'
 
 const icons = {
-  defaultSet,
+  defaultSet: 'custom',
   aliases,
-  sets: { custom: svgNuxtIcon },
+  sets: { custom },
 } as IconOptions
 
 export { icons }

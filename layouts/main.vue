@@ -1,10 +1,19 @@
 <script setup lang="ts">
+import { WUpload } from '#components'
+
 const userStore = useUserStore()
-const { userName, isAdmin } = storeToRefs(userStore)
+const { userName, isAdmin, userId } = storeToRefs(userStore)
 
 const userInitials = computed(() => {
   const initials = userName.value?.split(' ').map((n: string) => n[0])
   return `${initials?.join('')}`
+})
+
+const uploadRef = ref<InstanceType<typeof WUpload> | null>(null)
+provide('upload', {
+  open: () => {
+    uploadRef.value?.open()
+  },
 })
 </script>
 
@@ -33,7 +42,7 @@ const userInitials = computed(() => {
       </template>
     </v-app-bar>
 
-    <v-main class="flex justify-center">
+    <v-main class="flex justify-center mb-10!">
       <slot />
     </v-main>
     <div class="fixed bottom-0 left-0 right-0 flex items-center gap-3 bg-gray-800 p-3 py-1">
@@ -46,7 +55,7 @@ const userInitials = computed(() => {
           color="white"
           class="text-none"
           to="/"
-          icon="mdi-home"
+          icon="mdi:home"
         />
         <v-btn
           variant="plain"
@@ -54,25 +63,25 @@ const userInitials = computed(() => {
           color="white"
           class="text-none"
           to="/menu"
-          icon="mdi-book-open-page-variant"
+          icon="mdi:book-open-page-variant"
         />
         <v-btn
           variant="plain"
           :ripple="false"
           color="white"
           class="text-none"
-          icon="mdi-book-outline"
+          icon="mdi:book-outline"
         />
         <v-btn
           variant="plain"
           :ripple="false"
           color="white"
           class="text-none"
-          icon="mdi-image-multiple"
+          icon="mdi:image-multiple"
           to="/gallery"
         />
       </div>
-      <w-upload />
+      <WUpload ref="uploadRef" />
     </div>
   </v-app>
 </template>
