@@ -1,0 +1,8 @@
+.prose {
+   --un-prose-links: #1e3a8a;
+   a {
+    @apply underline-none !important;
+    @apply text-primary !important;
+  }
+
+}

@@ -71,6 +71,7 @@ provide('upload', {
           color="white"
           class="text-none"
           icon="mdi:book-outline"
+          to="/plan"
         />
         <v-btn
           variant="plain"

@@ -19,7 +19,7 @@ export default defineNuxtConfig({
     '@vee-validate/nuxt',
     'motion-v/nuxt',
     'vuetify-nuxt-module',
-    '@nuxtjs/mdc',
+    '@nuxt/content',
   ],
 
   ssr: false,
@@ -139,4 +139,9 @@ export default defineNuxtConfig({
     vueI18n: './i18n.config.ts', // if you are using custom path, default
   },
 
+  content: {
+    renderer: {
+      anchorLinks: false,
+    },
+  },
 })

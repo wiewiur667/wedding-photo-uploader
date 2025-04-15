@@ -3,14 +3,27 @@ definePageMeta({
   layout: 'main',
   middleware: ['authenticated'],
 })
+
+const { data: page } = await useAsyncData(() => {
+  return queryCollection('content').path('/menu').first()
+})
+
+const userStore = useUserStore()
+const { userName } = storeToRefs(userStore)
+const data = computed(() => ({
+  userName: userName.value,
+}))
 </script>
 
 <template>
-  <div>
-    Menu
-  </div>
+  <ContentRenderer
+    v-if="page"
+    class="prose"
+    :data
+    :value="page"
+  />
 </template>
 
-<style>
-
+<style lang="scss">
+@import url('~/assets/prose.scss');
 </style>

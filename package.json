@@ -15,6 +15,7 @@
   },
   "dependencies": {
     "@formkit/auto-animate": "^0.8.2",
+    "@nuxt/content": "^3.4.0",
     "@vee-validate/nuxt": "^4.15.0",
     "exifreader": "^4.26.2",
     "luxon": "^3.5.0",

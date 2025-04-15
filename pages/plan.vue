@@ -5,7 +5,7 @@ definePageMeta({
 })
 
 const { data: page } = await useAsyncData(() => {
-  return queryCollection('content').path('/').first()
+  return queryCollection('content').path('/plan').first()
 })
 
 const userStore = useUserStore()
@@ -16,14 +16,12 @@ const data = computed(() => ({
 </script>
 
 <template>
-  <div class="flex items-center justify-center">
-    <ContentRenderer
-      v-if="page"
-      class="p-3 prose"
-      :data
-      :value="page"
-    />
-  </div>
+  <ContentRenderer
+    v-if="page"
+    class="prose"
+    :data
+    :value="page"
+  />
 </template>
 
 <style lang="scss">
