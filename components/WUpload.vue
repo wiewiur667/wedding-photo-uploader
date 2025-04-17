@@ -5,7 +5,7 @@ import { generateThumbnail } from '~/code/utils'
 
 const dialogVisibleModel = ref(false)
 
-const { refreshGallery } = useUploads()
+const { gallery } = useUploads()
 
 const { open, onChange, onCancel } = useFileDialog({
   accept: 'image/jpeg,image/heic,image/heif,image/png', // Set to accept only image files
@@ -107,8 +107,7 @@ async function uploadFiles() {
     resultSnackbarVisible.value = true
     dialogVisibleModel.value = false
 
-    if (typeof refreshGallery === 'function') // Check if refreshGallery is defined
-      refreshGallery()
+    await gallery.refresh()
   }
   catch (e) {
     console.error(e)
@@ -154,9 +153,9 @@ async function uploadFiles() {
     </template>
     <template #default="{ isActive }">
       <v-card
-        class="flex flex-1 flex-col bg-white p-3"
+        class="flex flex-1 flex-col rounded-t-xl bg-white p-2"
       >
-        <v-card-title class="items-center gap-3 flex!">
+        <v-card-title class="items-center gap-3 flex! px-3!">
           <span>{{ $t('choosePhotos') }}</span>
           <v-spacer />
           <v-btn
@@ -187,22 +186,9 @@ async function uploadFiles() {
                   class="min-h-0 flex-1"
                 >
                   <img
-                    v-if="file.type.startsWith('image')"
                     :src="file.src"
                     class="m-auto block h-full max-w-full object-contain"
                   >
-                  <video
-                    v-else
-                    controls
-                    webkit-playsinline
-                    playsinline
-                    class="m-auto block h-full max-w-full object-contain"
-                  >
-                    <source
-                      :src="file.src"
-                      type="video/mp4"
-                    >
-                  </video>
                 </div>
                 <span v-else>{{ $t('noThumbnail') }}</span>
               </v-sheet>
@@ -212,22 +198,22 @@ async function uploadFiles() {
             <span class="">{{ carouselModel + 1 }} / {{ resolvedFiles.length }}</span>
           </div>
         </v-card-text>
-        <v-card-actions>
+        <v-card-actions class="bg-gray-800 text-gray-100">
           <v-btn
-            color="primary"
             density="comfortable"
             :text="$t('action.removePhoto')"
             append-icon="mdi-close"
+            :disabled="uploading"
             @click.stop="() => removeFile(carouselModel)"
           />
           <v-spacer />
           <v-btn
             v-if="!!resolvedFiles.length"
-            color="primary"
+            :text="$t('action.upload')"
+            append-icon="mdi-upload"
+            :loading="uploading"
             @click="() => uploadFiles()"
-          >
-            Wgraj
-          </v-btn>
+          />
         </v-card-actions>
       </v-card>
     </template>

@@ -4,3 +4,12 @@
 Zobacz co [przygotowalismy](/plan) dla Ciebie!
 
 Mozesz takze spawdzic nasze [menu](/plan).
+
+## Atrakcje 
+
+- gry i zabawy
+- duzo jedzenia
+- oczepiny
+- tort
+- muzyka
+- DJ

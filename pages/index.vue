@@ -19,7 +19,7 @@ const data = computed(() => ({
   <div class="flex items-center justify-center">
     <ContentRenderer
       v-if="page"
-      class="p-3 prose"
+      class="p-6 prose"
       :data
       :value="page"
     />

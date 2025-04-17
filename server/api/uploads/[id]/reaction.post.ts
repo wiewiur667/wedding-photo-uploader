@@ -22,13 +22,17 @@ export default defineEventHandler(async (event) => {
     return {}
   }
 
-  const reacted = await db
+  let reacted = false
+  const hasReacted = await db
     .$count(reactionTable, and(
       eq(reactionTable.fk_upload_id, id),
       eq(reactionTable.fk_user_id, userId),
     ))
 
-  if (reaction === 'like' && reacted === 0) {
+  if (hasReacted > 0)
+    reacted = true
+
+  if (reaction === 'like' && reacted === false) {
     try {
       await db.insert(reactionTable).values({
         id: ulid(),
@@ -37,6 +41,7 @@ export default defineEventHandler(async (event) => {
         created_at: Date.now(),
         fk_user_id: userId,
       })
+      reacted = true
     }
     catch (error) {
       console.error(error)
@@ -52,6 +57,8 @@ export default defineEventHandler(async (event) => {
           eq(reactionTable.fk_user_id, userId),
         ),
       )
+
+      reacted = false
     }
     catch (error) {
       console.error(error)
@@ -61,5 +68,8 @@ export default defineEventHandler(async (event) => {
 
   const totalReactions = await db.$count(reactionTable, eq(reactionTable.fk_upload_id, id))
 
-  return totalReactions
+  return {
+    reacted,
+    totalReactions,
+  }
 })

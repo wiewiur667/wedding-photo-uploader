@@ -1,4 +1,6 @@
 <script lang="ts" setup>
+import type { IUpload } from '~/code/interfaces/Upload.interface'
+
 definePageMeta({
   layout: 'main',
   middleware: ['authenticated'],
@@ -7,9 +9,23 @@ definePageMeta({
 const { id } = useRoute().params
 
 const { getUserAlbum } = useUploads()
+const { execute, refresh, offset, limit, total, data } = getUserAlbum(id as string)
+const galleryItems = ref<IUpload[]>([])
+async function loadMoreFn() {
+  offset.value = galleryItems.value.length
+  limit.value = 10
+  galleryItems.value = [...galleryItems.value, ...(data.value?.rows ?? [])]
+  await execute()
 
-const dataFn = getUserAlbum(id as string)
-await dataFn.execute()
+  return {
+    total: galleryItems.value.length,
+    isMore: galleryItems.value.length < (total?.value ?? 0),
+  }
+}
+
+async function refreshFn() {
+  await refresh()
+}
 </script>
 
 <template>
@@ -24,7 +40,11 @@ await dataFn.execute()
       Powrot
     </v-btn>
     Album Uzytkownika
-    <uploads-gallery :data-fn />
+    <uploads-gallery
+      :items="galleryItems"
+      :load-more-fn="loadMoreFn"
+      :refresh-fn="refreshFn"
+    />
   </div>
 </template>
 

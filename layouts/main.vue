@@ -62,22 +62,6 @@ provide('upload', {
           :ripple="false"
           color="white"
           class="text-none"
-          to="/menu"
-          icon="mdi:book-open-page-variant"
-        />
-        <v-btn
-          variant="plain"
-          :ripple="false"
-          color="white"
-          class="text-none"
-          icon="mdi:book-outline"
-          to="/plan"
-        />
-        <v-btn
-          variant="plain"
-          :ripple="false"
-          color="white"
-          class="text-none"
           icon="mdi:image-multiple"
           to="/gallery"
         />

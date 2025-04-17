@@ -1,12 +1,13 @@
 <script lang="ts" setup>
-import type { VInfiniteScroll } from 'vuetify/components'
+import type { InfiniteScrollSide, InfiniteScrollStatus } from 'vuetify/lib/components/VInfiniteScroll/VInfiniteScroll.js'
 import type { IUpload } from '~/code/interfaces/Upload.interface'
 import { UploadsGalleryItem } from '#components'
-import { uniqBy } from 'lodash-es'
 import { motion } from 'motion-v'
 
 interface Props {
-  dataFn: ReturnType<ReturnType<typeof useUploads>['getGallery']> | ReturnType<ReturnType<typeof useUploads>['getAlbum']>
+  items: IUpload[]
+  loadMoreFn: () => Promise<{ total: number, isMore: boolean }>
+  refreshFn: () => Promise<void>
 }
 
 const props = defineProps<Props>()
@@ -16,13 +17,12 @@ const emit = defineEmits<{
   (e: 'reaction', id: string): void
 }>()
 
-const { data: _uploads, execute: getUploads, total: totalUploads, offset, limit, refresh: refreshUploads } = props.dataFn
-
-const uploads = ref<IUpload[]>([])
 const previewDialog = reactive<{ open: boolean, selected: IUpload | null }>({
   open: false,
   selected: null,
 })
+
+const _key = ref(0)
 
 function previewUpload(selected: IUpload) {
   previewDialog.selected = selected
@@ -40,51 +40,36 @@ async function reactToUpload(upload: IUpload) {
 }
 
 async function refresh() {
-  uploads.value = []
-  offset.value = 0
-  await refreshUploads()
-  uploads.value = [...uploads.value, ..._uploads.value?.rows ?? []]
+  _key.value++
+  await nextTick()
+  await props.refreshFn()
 }
 
-async function load(options: { side: string, done: (state: string) => void }) {
-  if (totalUploads.value == null || uploads.value.length < totalUploads.value) {
-    offset.value = _uploads.value?.rows.length ?? 0
-    await getUploads()
-    uploads.value = [...uploads.value, ..._uploads.value?.rows ?? []]
+async function load(options: { side: InfiniteScrollSide, done: (state: InfiniteScrollStatus) => void }) {
+  const result = await props.loadMoreFn()
 
+  if (result.isMore) {
     options.done('ok')
   }
-
-  if (totalUploads.value != null && totalUploads.value === 0) {
-    options.done('empty')
-    return
-  }
-
-  if (totalUploads.value === uploads.value.length) {
+  else {
     options.done('empty')
   }
 }
-
-const groupedUploads = computed<IUpload[]>(() => {
-  const uniqueItems = uniqBy(uploads.value, 'id')
-  return uniqueItems
-})
 
 const MotionGalleryItem = motion.create(UploadsGalleryItem)
 
 const { open: openUpload } = inject('upload', { open: () => {} }) as { open: () => void }
-
-uploads.value = [...uploads.value, ..._uploads.value?.rows ?? []]
 </script>
 
 <template>
   <v-infinite-scroll
-    @load="load"
+    :key="_key"
+    @load="(options) => load(options)"
   >
     <div class="mb-20 flex flex-1 flex-col gap-2 px-4 py-1">
       <v-row>
         <v-col
-          v-for="upload in groupedUploads"
+          v-for="upload in items"
           :key="upload.id"
           class="p-[0.125rem]!"
           cols="4"

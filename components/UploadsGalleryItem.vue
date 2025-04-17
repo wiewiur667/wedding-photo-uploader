@@ -32,7 +32,7 @@ function animateIcon() {
     v-press="{
       click: () => $emit('open'),
       dblclick: async () => {
-        upload.reactionsCount = await react(upload.id, 'like')
+        await react(upload.id)
         animateIcon()
       },
     }"

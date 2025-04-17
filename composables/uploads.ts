@@ -5,13 +5,22 @@ import { uniqBy } from 'lodash-es'
 import { DateTime } from 'luxon'
 
 export function useUploads() {
-  const galleryItems = useState('galleryItems', () => ref<IUpload[]>([]))
-  const gallery = useOffsetData<IUploadOffsetResponse['rows'][number], IUpload>('uploads', `/api/uploads`, { transformRow: transformUploadData })
+  const galleryItems = useState<IUpload[]>('galleryItems', () => ref<IUpload[]>([]))
+  const galleryDataQuery = useOffsetData<IUploadOffsetResponse['rows'][number], IUpload>('uploads', `/api/uploads`, { transformRow: transformUploadData })
+  const gallery = {
+    ...galleryDataQuery,
+    refresh: async () => {
+      galleryItems.value = []
+      galleryDataQuery.offset.value = 0
+    },
+  }
 
   watch(() => gallery.data, (newVal) => {
     if (newVal.value) {
       galleryItems.value = uniqBy([...galleryItems.value, ...(newVal.value.rows ?? [])], 'id')
     }
+  }, {
+    deep: true,
   })
 
   function transformUploadData(upload: IUploadOffsetResponse['rows'][number]): IUpload {
@@ -36,10 +45,22 @@ export function useUploads() {
     })
   }
 
-  async function react(uploadId: string, reaction: string) {
-    return await $fetch<number>(`api/uploads/${uploadId}/reaction?reaction=${reaction}`, {
+  async function react(uploadId: string) {
+    const state = useState<IUpload[]>('galleryItems')
+    const upload = state.value.find(upload => upload.id === uploadId)
+    let reaction = 'like'
+    if (upload?.reacted) {
+      reaction = 'dislike'
+    }
+
+    const result = await $fetch<{ reacted: boolean, totalReactions: number }>(`api/uploads/${uploadId}/reaction?reaction=${reaction}`, {
       method: 'POST',
     })
+
+    if (upload) {
+      upload.reacted = result.reacted
+      upload.reactionsCount = result.totalReactions
+    }
   }
 
   function getUserAlbum(userId: string) {

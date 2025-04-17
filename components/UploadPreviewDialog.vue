@@ -1,8 +1,5 @@
 <script lang="ts" setup>
-import type { CommentsView } from '#components'
-import type ReactionsView from './ReactionsView.vue'
 import type { IUpload } from '~/code/interfaces/Upload.interface'
-
 import { defaultDateFormat } from '~/code/utils'
 
 const { upload } = defineProps<Props>()
@@ -39,18 +36,6 @@ async function download() {
   element.click()
   document.body.removeChild(element)
 }
-
-const reactionsRef = ref<typeof ReactionsView>()
-
-// function openReactions() {
-//   reactionsRef?.value?.open()
-// }
-
-const commentsRef = ref<typeof CommentsView>()
-
-// function openComments() {
-//   commentsRef?.value?.open()
-// }
 
 function closeDialog() {
   emit('close', upload.id)
@@ -109,15 +94,13 @@ async function remove() {
         <div
           class="flex items-center justify-between gap-3 overflow-auto bg-gray-800 p-4 text-white"
         >
-          <reactions-view
-            ref="reactionsRef"
-            :target-id="upload.id"
-            :reacted="upload.reacted"
-            @react="react(upload.id, upload.reacted ? 'dislike' : 'like')"
-          />
-          <comments-view
-            ref="commentsRef"
-            :target-id="upload.id"
+          <v-btn
+            flat
+            size="small"
+            variant="text"
+            :text="$t('action.react')"
+            prepend-icon="mdi-heart-outline"
+            @click="() => react(upload.id)"
           />
           <v-btn
             flat
